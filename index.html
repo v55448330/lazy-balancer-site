@@ -249,7 +249,7 @@ section.wrap + section.wrap { border-top: 1px solid rgba(255,255,255,0.05); }
 .lightbox.open { display: flex; animation: lbIn 0.25s ease; }
 @keyframes lbIn { from { opacity: 0; } to { opacity: 1; } }
 .lightbox img {
-  max-width: min(96vw, 1600px); max-height: 90vh; border-radius: 12px;
+  max-width: min(96vw, 1800px); max-height: 92vh; border-radius: 12px;
   box-shadow: 0 40px 120px rgba(0,0,0,0.7);
   cursor: zoom-out;
 }
@@ -358,6 +358,7 @@ footer { margin-top: 110px; border-top: 1px solid rgba(255,255,255,0.07); paddin
     </a>
     <div class="nav-links">
       <a href="#features">特性</a>
+      <a href="#balancer">负载均衡</a>
       <a href="#waf">WAF 防护</a>
       <a href="#enterprise">企业能力</a>
       <a href="#arch">架构</a>
@@ -390,10 +391,14 @@ footer { margin-top: 110px; border-top: 1px solid rgba(255,255,255,0.07); paddin
       <span class="term-title">lazy-balancer — zsh</span>
     </div>
     <div class="term-body">
-      <div><span class="t-c"># 一行命令,启动完整平台(host 网络,随 Docker 自启)</span></div>
+      <div><span class="t-c"># 一行命令,启动完整平台(host 网络 + 自启 + 数据持久化)</span></div>
       <div><span class="t-p">$</span> <span class="t-w">docker run -d --name lazy-balancer \</span></div>
       <div>&nbsp;&nbsp;<span class="t-w">--network host --restart unless-stopped \</span></div>
-      <div>&nbsp;&nbsp;<span class="t-w">-v lb-data:/app/data v55448330/lazy-balancer-v2:<span class="t-v">latest</span></span></div>
+      <div>&nbsp;&nbsp;<span class="t-w">-v lb-data:/app/data -v lb-certs:/app/certs \</span></div>
+      <div>&nbsp;&nbsp;<span class="t-w">-v lb-logs:/app/logs -v lb-waf:/app/waf \</span></div>
+      <div>&nbsp;&nbsp;<span class="t-w">v55448330/lazy-balancer-v2:<span class="t-v">latest</span></span></div>
+      <div><span class="t-c"># 挂载说明:/app/data 数据库与配置(必需) /app/certs 证书私钥(必需)</span></div>
+      <div><span class="t-c">#           /app/logs 日志(推荐)      /app/waf 规则库与 GeoIP(推荐)</span></div>
       <div><span class="t-s">✓ 管理面板  http://localhost:8000</span></div>
       <div><span class="t-s">✓ 规则 / WAF / 证书 / 集群 — 全部可视化</span></div>
       <div><span class="t-p">$</span> <span class="cursor"></span></div>
@@ -444,6 +449,46 @@ footer { margin-top: 110px; border-top: 1px solid rgba(255,255,255,0.07); paddin
       <div class="f-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#f472b6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 9l-4 3 4 3M16 9l4 3-4 3M13 6l-2 12"/></svg></div>
       <h3>API 与 MCP 双通道</h3>
       <p>全量 REST API + OpenAPI 文档,127 个 MCP 工具直连 Claude/Cursor 等 AI 助手。人可点,机可编,运维进入对话时代。</p>
+    </div>
+  </div>
+</section>
+
+<section class="wrap" id="balancer">
+  <div class="sec-head reveal">
+    <div class="sec-tag">LOAD BALANCING</div>
+    <h2 class="sec-title">流量分发,稳字当头</h2>
+    <p class="sec-desc">从域名到上游的每一步都可视化编排——协议、权重、健康、路径,尽在掌握。</p>
+  </div>
+  <div class="features">
+    <div class="f-card reveal">
+      <div class="f-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#4f8cff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/><circle cx="19" cy="18" r="2.2"/></svg></div>
+      <h3>双协议承载</h3>
+      <p>HTTP 站点与 TCP 四层代理同台管理:Web 业务、数据库、SSH、自定义协议,一个面板全部接入。</p>
+    </div>
+    <div class="f-card reveal">
+      <div class="f-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#38e1ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 8l7-5 7 5"/><path d="M7 21h10"/></svg></div>
+      <h3>权重轮询调度</h3>
+      <p>上游按比例分配流量,灰度切流改一个数字即可;配合权重预热,新版本上线不再心惊胆战。</p>
+    </div>
+    <div class="f-card reveal">
+      <div class="f-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 8-6-16-3 8H2"/></svg></div>
+      <h3>主动健康检查</h3>
+      <p>定时探测上游存活,异常自动摘除、恢复自动回切——故障节点不再拖垮全站。</p>
+    </div>
+    <div class="f-card reveal">
+      <div class="f-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.5 2.3 3.8 5.3 3.8 8.5s-1.3 6.2-3.8 8.5c-2.5-2.3-3.8-5.3-3.8-8.5s1.3-6.2 3.8-8.5z"/></svg></div>
+      <h3>动态 DNS 上游</h3>
+      <p>上游地址跟随域名解析变化自动更新,容器编排与弹性扩缩场景下游池永远新鲜。</p>
+    </div>
+    <div class="f-card reveal">
+      <div class="f-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#f472b6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19c2-6 6-10 16-12"/><path d="M14 5l6 2-2 6"/></svg></div>
+      <h3>路径级路由</h3>
+      <p>同域名下按路径分发到不同上游:/api 给服务集群,/static 给对象存储,各得其所。</p>
+    </div>
+    <div class="f-card reveal">
+      <div class="f-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><path d="M12 14v3"/></svg></div>
+      <h3>TLS 一键终结</h3>
+      <p>HTTPS 在入口统一终结,证书自动签发续期;上游继续明文内网通信,零额外配置。</p>
     </div>
   </div>
 </section>
@@ -579,41 +624,41 @@ footer { margin-top: 110px; border-top: 1px solid rgba(255,255,255,0.07); paddin
       <text x="115" y="87" text-anchor="middle" fill="#62687f" font-size="10.5">Vue 3 管理界面</text>
       <rect x="30" y="120" width="170" height="62" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.14)"/>
       <text x="115" y="146" text-anchor="middle" fill="#e8eaf2" font-size="13" font-weight="600">API 客户端</text>
-      <text x="115" y="167" text-anchor="middle" fill="#62687f" font-size="10.5">REST + OpenAPI</text>
+      <text x="115" y="167" text-anchor="middle" fill="#62687f" font-size="10.5">REST 接口 + 在线文档</text>
       <rect x="30" y="200" width="170" height="62" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.14)"/>
-      <text x="115" y="226" text-anchor="middle" fill="#e8eaf2" font-size="13" font-weight="600">AI Agent</text>
+      <text x="115" y="226" text-anchor="middle" fill="#e8eaf2" font-size="13" font-weight="600">AI 助手</text>
       <text x="115" y="247" text-anchor="middle" fill="#62687f" font-size="10.5">MCP · 127 工具</text>
       <!-- 汇入干线(无箭头短横 + 单箭头进管理面) -->
       <path d="M204 71 L240 71 M204 151 L240 151 M204 231 L240 231" stroke="rgba(56,225,255,0.55)" stroke-width="2"/>
       <path d="M240 71 L240 231" stroke="rgba(56,225,255,0.55)" stroke-width="2"/>
-      <path d="M240 151 L304 151" stroke="url(#g1)" stroke-width="2.4" marker-end="url(#ah)"/>
+      <path d="M240 151 L304 151" stroke="#38e1ff" stroke-width="2.4" marker-end="url(#ah)"/>
 
       <!-- Go 管理面 -->
       <rect x="310" y="40" width="290" height="266" rx="16" fill="rgba(79,140,255,0.06)" stroke="url(#g1)" stroke-opacity="0.5"/>
-      <text x="455" y="72" text-anchor="middle" fill="#e8eaf2" font-size="15" font-weight="700">Go 管理面</text>
-      <text x="455" y="92" text-anchor="middle" fill="#62687f" font-size="11">Gin API · 唯一写入口</text>
+      <text x="455" y="72" text-anchor="middle" fill="#e8eaf2" font-size="15" font-weight="700">管理面</text>
+      <text x="455" y="92" text-anchor="middle" fill="#62687f" font-size="11">接口服务 · 唯一写入口</text>
       <rect x="328" y="106" width="254" height="50" rx="11" fill="rgba(255,255,255,0.035)" stroke="rgba(255,255,255,0.12)"/>
       <text x="455" y="127" text-anchor="middle" fill="#9aa0b5" font-size="12" font-weight="600">配置渲染器</text>
-      <text x="455" y="146" text-anchor="middle" fill="#62687f" font-size="10.5">DB 视图 → Caddy JSON</text>
+      <text x="455" y="146" text-anchor="middle" fill="#62687f" font-size="10.5">数据库视图 → Caddy 配置</text>
       <rect x="328" y="166" width="254" height="50" rx="11" fill="rgba(56,225,255,0.07)" stroke="rgba(56,225,255,0.3)"/>
       <text x="455" y="187" text-anchor="middle" fill="#38e1ff" font-size="12" font-weight="600">校验链 · 四道关卡</text>
-      <text x="455" y="206" text-anchor="middle" fill="#62687f" font-size="10.5">表单 → 字段 → Caddy CLI → 事务门控</text>
+      <text x="455" y="206" text-anchor="middle" fill="#62687f" font-size="10.5">表单 → 字段 → Caddy 校验 → 事务门控</text>
       <rect x="328" y="226" width="254" height="50" rx="11" fill="rgba(139,92,246,0.09)" stroke="rgba(139,92,246,0.35)"/>
       <text x="455" y="247" text-anchor="middle" fill="#c4b5fd" font-size="12" font-weight="600">SQLite 持久层</text>
       <text x="455" y="266" text-anchor="middle" fill="#62687f" font-size="10.5">规则 / 策略 / 审计 / 指标 · 唯一真实来源</text>
 
       <!-- /load 通道 -->
-      <path d="M604 151 L668 151" stroke="url(#g2)" stroke-width="2.6" marker-end="url(#ah2)"/>
-      <text x="636" y="140" text-anchor="middle" fill="#f472b6" font-size="11" font-weight="600">/load</text>
+      <path d="M604 151 L668 151" stroke="#f472b6" stroke-width="2.6" marker-end="url(#ah2)"/>
+      <text x="636" y="140" text-anchor="middle" fill="#f472b6" font-size="11" font-weight="600">热加载</text>
 
       <!-- Caddy 数据面 -->
       <rect x="676" y="40" width="234" height="266" rx="16" fill="rgba(244,114,182,0.05)" stroke="url(#g2)" stroke-opacity="0.5"/>
-      <text x="793" y="72" text-anchor="middle" fill="#e8eaf2" font-size="15" font-weight="700">Caddy 数据面</text>
+      <text x="793" y="72" text-anchor="middle" fill="#e8eaf2" font-size="15" font-weight="700">数据面</text>
       <text x="793" y="92" text-anchor="middle" fill="#62687f" font-size="11">只跑流量,不碰配置</text>
       <rect x="694" y="106" width="198" height="40" rx="10" fill="rgba(255,255,255,0.035)" stroke="rgba(255,255,255,0.12)"/>
-      <text x="793" y="130" text-anchor="middle" fill="#9aa0b5" font-size="11.5">HTTP 路由 + TCP L4 代理</text>
+      <text x="793" y="130" text-anchor="middle" fill="#9aa0b5" font-size="11.5">HTTP 路由 + TCP 四层代理</text>
       <rect x="694" y="156" width="198" height="40" rx="10" fill="rgba(255,255,255,0.035)" stroke="rgba(255,255,255,0.12)"/>
-      <text x="793" y="180" text-anchor="middle" fill="#9aa0b5" font-size="11.5">Coraza WAF · 限流 · GeoIP</text>
+      <text x="793" y="180" text-anchor="middle" fill="#9aa0b5" font-size="11.5">WAF 防火墙 · 限流 · 地域识别</text>
       <rect x="694" y="206" width="198" height="40" rx="10" fill="rgba(255,255,255,0.035)" stroke="rgba(255,255,255,0.12)"/>
       <text x="793" y="230" text-anchor="middle" fill="#9aa0b5" font-size="11.5">规则指标插件 · 拦截计数</text>
       <rect x="694" y="256" width="198" height="36" rx="10" fill="rgba(52,211,153,0.08)" stroke="rgba(52,211,153,0.3)"/>
@@ -622,7 +667,7 @@ footer { margin-top: 110px; border-top: 1px solid rgba(255,255,255,0.07); paddin
       <!-- last-good(虚线注解,不与任何线交叉) -->
       <path d="M455 312 L455 344" stroke="rgba(251,191,36,0.6)" stroke-width="2" stroke-dasharray="5 4"/>
       <rect x="360" y="348" width="190" height="52" rx="11" fill="rgba(251,191,36,0.07)" stroke="rgba(251,191,36,0.3)"/>
-      <text x="455" y="370" text-anchor="middle" fill="#fbbf24" font-size="11.5" font-weight="600">last-known-good 兜底</text>
+      <text x="455" y="370" text-anchor="middle" fill="#fbbf24" font-size="11.5" font-weight="600">末次可用配置兜底</text>
       <text x="455" y="390" text-anchor="middle" fill="#62687f" font-size="10">加载失败原子回滚</text>
 
       <!-- 数据通道(下,独立行) -->
@@ -633,7 +678,7 @@ footer { margin-top: 110px; border-top: 1px solid rgba(255,255,255,0.07); paddin
       <path d="M784 374 L860 374 L860 312" stroke="#34d399" stroke-width="2.2" fill="none" marker-end="url(#ah8)"/>
     </svg>
   </div>
-  <p class="arch-note reveal">配置唯一真实来源是 SQLite;数据面配置只经「渲染 → 四道校验 → /load」单向前进,永不手工改。</p>
+  <p class="arch-note reveal">配置唯一真实来源是 SQLite;数据面配置只经「渲染 → 四道校验 → 热加载」单向前进,永不手工改。</p>
 
   <div class="arch-sub reveal">
     <h3 class="arch-sub-title">集群模式 · <span>一次配置,处处生效</span></h3>
@@ -653,7 +698,7 @@ footer { margin-top: 110px; border-top: 1px solid rgba(255,255,255,0.07); paddin
         <text x="150" y="178" text-anchor="middle" fill="#62687f" font-size="11.5">写操作 → 版本号 +1</text>
         <text x="150" y="200" text-anchor="middle" fill="#38e1ff" font-size="11.5">快照签名签发</text>
         <!-- 下发干线 + 三分支(分支无箭头,端点单箭头) -->
-        <path d="M264 160 L330 160" stroke="url(#g3)" stroke-width="2.4"/>
+        <path d="M264 160 L330 160" stroke="#34d399" stroke-width="2.4"/>
         <path d="M330 73 L330 247" stroke="rgba(52,211,153,0.5)" stroke-width="2"/>
         <path d="M330 160 L330 160" stroke="none"/>
         <path d="M330 73 L410 73" stroke="rgba(52,211,153,0.5)" stroke-width="2" marker-end="url(#ah3)"/>
@@ -756,11 +801,21 @@ footer { margin-top: 110px; border-top: 1px solid rgba(255,255,255,0.07); paddin
     <div class="step reveal">
       <div class="step-num">2</div>
       <h3>启动容器</h3>
-      <p>host 网络直通,崩溃/重启自动拉起:</p>
+      <p>host 网络直通,自启 + 四类目录持久化(挂载说明见下):</p>
       <code>docker run -d --name lazy-balancer \
   --network host --restart unless-stopped \
-  -v lb-data:/app/data \
+  -v lb-data:/app/data -v lb-certs:/app/certs \
+  -v lb-logs:/app/logs -v lb-waf:/app/waf \
   v55448330/lazy-balancer-v2:latest</code>
+    </div>
+    <div class="step reveal" style="grid-column: 1 / -1; padding: 20px 26px;">
+      <p style="margin: 0; font-size: 13px; color: var(--text-3); line-height: 1.9;">
+        <b style="color: var(--text-2);">挂载说明</b>&nbsp;&nbsp;
+        <code style="display: inline; padding: 2px 8px; border-radius: 6px;">/app/data</code> 数据库与配置(必需) ·
+        <code style="display: inline; padding: 2px 8px; border-radius: 6px;">/app/certs</code> 证书与私钥(必需) ·
+        <code style="display: inline; padding: 2px 8px; border-radius: 6px;">/app/logs</code> 应用与访问日志(推荐) ·
+        <code style="display: inline; padding: 2px 8px; border-radius: 6px;">/app/waf</code> 规则库与 GeoIP(推荐)
+      </p>
     </div>
     <div class="step reveal">
       <div class="step-num">3</div>
