@@ -1,7 +1,7 @@
 # Lazy Balancer V2 官网 · 维护与发布流程(固化)
 
 官网唯一仓库:**https://git.xiaobao.cool/zhang/lazy-balancer-site**
-官网镜像:**registry.xiaobao.cool:443/zhang/lazy-balancer-site:<tag>**(仅 linux/amd64)
+官网镜像:**registry.xiaobao.cool/zhang/lazy-balancer-site:<tag>**(仅 linux/amd64)
 
 ---
 
@@ -31,14 +31,14 @@
 3. **发版镜像**(内容定稿后):
    ```bash
    docker build --platform linux/amd64 \
-     -t registry.xiaobao.cool:443/zhang/lazy-balancer-site:<tag> \
-     -t registry.xiaobao.cool:443/zhang/lazy-balancer-site:latest .
-   docker push registry.xiaobao.cool:443/zhang/lazy-balancer-site:<tag>
-   docker push registry.xiaobao.cool:443/zhang/lazy-balancer-site:latest
+     -t registry.xiaobao.cool/zhang/lazy-balancer-site:<tag> \
+     -t registry.xiaobao.cool/zhang/lazy-balancer-site:latest .
+   docker push registry.xiaobao.cool/zhang/lazy-balancer-site:<tag>
+   docker push registry.xiaobao.cool/zhang/lazy-balancer-site:latest
    ```
    - **仅 amd64**(用户裁定);arm64 宿主机跨平台构建即可
    - **tag 必须询问用户**,不得自行递增(与主产品同一底线)
-   - 推送前 `docker login registry.xiaobao.cool:443`
+   - 推送前 `docker login registry.xiaobao.cool`(**地址不带端口**——带 :443 会与登录条目不匹配报 access forbidden,2026-09-17 实证)
 
 ---
 
