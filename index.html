@@ -629,9 +629,9 @@ footer { margin-top: 110px; border-top: 1px solid rgba(255,255,255,0.07); paddin
       <text x="115" y="226" text-anchor="middle" fill="#e8eaf2" font-size="13" font-weight="600">AI 助手</text>
       <text x="115" y="247" text-anchor="middle" fill="#62687f" font-size="10.5">MCP · 127 工具</text>
       <!-- 汇入干线(无箭头短横 + 单箭头进管理面) -->
-      <path d="M204 71 L240 71 M204 151 L240 151 M204 231 L240 231" stroke="rgba(56,225,255,0.55)" stroke-width="2"/>
-      <path d="M240 71 L240 231" stroke="rgba(56,225,255,0.55)" stroke-width="2"/>
-      <path d="M240 151 L304 151" stroke="#38e1ff" stroke-width="2" marker-end="url(#ah)"/>
+      <path d="M204 71 L240 71 M204 151 L240 151 M204 231 L240 231" stroke="rgba(56,225,255,0.6)" stroke-width="2"/>
+      <path d="M240 71 L240 231" stroke="rgba(56,225,255,0.6)" stroke-width="2"/>
+      <path d="M240 151 L304 151" stroke="rgba(56,225,255,0.6)" stroke-width="2" marker-end="url(#ah)"/>
 
       <!-- Go 管理面 -->
       <rect x="310" y="40" width="290" height="266" rx="16" fill="rgba(79,140,255,0.06)" stroke="url(#g1)" stroke-opacity="0.5"/>
@@ -648,7 +648,7 @@ footer { margin-top: 110px; border-top: 1px solid rgba(255,255,255,0.07); paddin
       <text x="455" y="266" text-anchor="middle" fill="#62687f" font-size="10.5">规则 / 策略 / 审计 / 指标 · 唯一真实来源</text>
 
       <!-- /load 通道 -->
-      <path d="M604 151 L668 151" stroke="#f472b6" stroke-width="2" marker-end="url(#ah2)"/>
+      <path d="M604 151 L668 151" stroke="rgba(244,114,182,0.75)" stroke-width="2" marker-end="url(#ah2)"/>
       <text x="636" y="140" text-anchor="middle" fill="#f472b6" font-size="11" font-weight="600">热加载</text>
 
       <!-- Caddy 数据面 -->
@@ -675,7 +675,7 @@ footer { margin-top: 110px; border-top: 1px solid rgba(255,255,255,0.07); paddin
       <rect x="610" y="348" width="170" height="52" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.12)"/>
       <text x="695" y="370" text-anchor="middle" fill="#9aa0b5" font-size="11.5" font-weight="600">终端用户请求</text>
       <text x="695" y="390" text-anchor="middle" fill="#62687f" font-size="10">浏览器 / 移动端 / API 调用</text>
-      <path d="M784 374 L860 374 L860 312" stroke="#34d399" stroke-width="2" fill="none" marker-end="url(#ah8)"/>
+      <path d="M784 374 L860 374 L860 312" stroke="rgba(52,211,153,0.7)" stroke-width="2" fill="none" marker-end="url(#ah8)"/>
     </svg>
   </div>
   <p class="arch-note reveal">配置唯一真实来源是 SQLite;数据面配置只经「渲染 → 四道校验 → 热加载」单向前进,永不手工改。</p>
@@ -698,12 +698,12 @@ footer { margin-top: 110px; border-top: 1px solid rgba(255,255,255,0.07); paddin
         <text x="150" y="178" text-anchor="middle" fill="#62687f" font-size="11.5">写操作 → 版本号 +1</text>
         <text x="150" y="200" text-anchor="middle" fill="#38e1ff" font-size="11.5">快照签名签发</text>
         <!-- 下发干线 + 三分支(分支无箭头,端点单箭头) -->
-        <path d="M264 160 L330 160" stroke="#34d399" stroke-width="2"/>
-        <path d="M330 73 L330 247" stroke="rgba(52,211,153,0.5)" stroke-width="2"/>
+        <path d="M264 160 L330 160" stroke="rgba(52,211,153,0.6)" stroke-width="2"/>
+        <path d="M330 73 L330 247" stroke="rgba(52,211,153,0.6)" stroke-width="2"/>
         <path d="M330 160 L330 160" stroke="none"/>
-        <path d="M330 73 L410 73" stroke="rgba(52,211,153,0.5)" stroke-width="2" marker-end="url(#ah3)"/>
-        <path d="M330 160 L410 160" stroke="rgba(52,211,153,0.5)" stroke-width="2" marker-end="url(#ah3)"/>
-        <path d="M330 247 L410 247" stroke="rgba(52,211,153,0.5)" stroke-width="2" marker-end="url(#ah3)"/>
+        <path d="M330 73 L410 73" stroke="rgba(52,211,153,0.6)" stroke-width="2" marker-end="url(#ah3)"/>
+        <path d="M330 160 L410 160" stroke="rgba(52,211,153,0.6)" stroke-width="2" marker-end="url(#ah3)"/>
+        <path d="M330 247 L410 247" stroke="rgba(52,211,153,0.6)" stroke-width="2" marker-end="url(#ah3)"/>
         <text x="300" y="140" text-anchor="middle" fill="#34d399" font-size="10.5">按版本拉取快照</text>
         <!-- 从节点 -->
         <rect x="416" y="42" width="200" height="62" rx="13" fill="rgba(52,211,153,0.07)" stroke="rgba(52,211,153,0.4)"/>
@@ -743,32 +743,32 @@ footer { margin-top: 110px; border-top: 1px solid rgba(255,255,255,0.07); paddin
         <rect x="20" y="60" width="130" height="70" rx="13" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.14)"/>
         <text x="85" y="88" text-anchor="middle" fill="#e8eaf2" font-size="12.5" font-weight="600">HTTPS 请求</text>
         <text x="85" y="109" text-anchor="middle" fill="#62687f" font-size="10">app.example.com</text>
-        <path d="M154 95 L178 95" stroke="#4f8cff" stroke-width="2" marker-end="url(#ah5)"/>
+        <path d="M154 95 L178 95" stroke="rgba(79,140,255,0.75)" stroke-width="2" marker-end="url(#ah5)"/>
         <rect x="184" y="60" width="130" height="70" rx="13" fill="rgba(79,140,255,0.08)" stroke="rgba(79,140,255,0.4)"/>
         <text x="249" y="86" text-anchor="middle" fill="#e8eaf2" font-size="12.5" font-weight="600">① 规则匹配</text>
         <text x="249" y="106" text-anchor="middle" fill="#62687f" font-size="10">域名+端口 · 指标注入</text>
         <text x="249" y="121" text-anchor="middle" fill="#62687f" font-size="10">规则 ID 头标记</text>
-        <path d="M318 95 L342 95" stroke="#4f8cff" stroke-width="2" marker-end="url(#ah5)"/>
+        <path d="M318 95 L342 95" stroke="rgba(79,140,255,0.75)" stroke-width="2" marker-end="url(#ah5)"/>
         <rect x="348" y="60" width="130" height="70" rx="13" fill="rgba(56,225,255,0.07)" stroke="rgba(56,225,255,0.4)"/>
         <text x="413" y="86" text-anchor="middle" fill="#e8eaf2" font-size="12.5" font-weight="600">② IP 预检</text>
         <text x="413" y="106" text-anchor="middle" fill="#62687f" font-size="10">多策略集中:黑/白/信任</text>
         <text x="413" y="121" text-anchor="middle" fill="#62687f" font-size="10">拒绝即断,零深层消耗</text>
-        <path d="M482 95 L506 95" stroke="#4f8cff" stroke-width="2" marker-end="url(#ah5)"/>
+        <path d="M482 95 L506 95" stroke="rgba(79,140,255,0.75)" stroke-width="2" marker-end="url(#ah5)"/>
         <rect x="512" y="60" width="130" height="70" rx="13" fill="rgba(251,191,36,0.07)" stroke="rgba(251,191,36,0.4)"/>
         <text x="577" y="86" text-anchor="middle" fill="#e8eaf2" font-size="12.5" font-weight="600">③ 限流</text>
         <text x="577" y="106" text-anchor="middle" fill="#62687f" font-size="10">按源地址速率+突发</text>
         <text x="577" y="121" text-anchor="middle" fill="#62687f" font-size="10">超限返回 429</text>
-        <path d="M646 95 L670 95" stroke="#4f8cff" stroke-width="2" marker-end="url(#ah5)"/>
+        <path d="M646 95 L670 95" stroke="rgba(79,140,255,0.75)" stroke-width="2" marker-end="url(#ah5)"/>
         <rect x="676" y="60" width="140" height="70" rx="13" fill="rgba(139,92,246,0.09)" stroke="rgba(139,92,246,0.45)"/>
         <text x="746" y="86" text-anchor="middle" fill="#e8eaf2" font-size="12.5" font-weight="600">④ WAF 策略组</text>
         <text x="746" y="106" text-anchor="middle" fill="#62687f" font-size="10">规则集+自定义 · 地域</text>
         <text x="746" y="121" text-anchor="middle" fill="#62687f" font-size="10">异常评分累计</text>
         <!-- 放行进 ⑤(④下方左折,箭头朝左入 ⑤) -->
-        <path d="M746 134 L746 172 L700 172" stroke="#34d399" stroke-width="2" fill="none" marker-end="url(#ah7)"/>
+        <path d="M746 134 L746 172 L700 172" stroke="rgba(52,211,153,0.7)" stroke-width="2" fill="none" marker-end="url(#ah7)"/>
         <rect x="540" y="140" width="152" height="64" rx="13" fill="rgba(52,211,153,0.08)" stroke="rgba(52,211,153,0.4)"/>
         <text x="616" y="167" text-anchor="middle" fill="#34d399" font-size="12.5" font-weight="600">⑤ 加权上游池</text>
         <text x="616" y="188" text-anchor="middle" fill="#62687f" font-size="10">健康检查 · 权重轮询</text>
-        <path d="M540 172 L480 172" stroke="#34d399" stroke-width="2" marker-end="url(#ah7)"/>
+        <path d="M540 172 L480 172" stroke="rgba(52,211,153,0.7)" stroke-width="2" marker-end="url(#ah7)"/>
         <rect x="322" y="140" width="152" height="64" rx="13" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.16)"/>
         <text x="398" y="167" text-anchor="middle" fill="#e8eaf2" font-size="12.5" font-weight="600">⑥ 响应</text>
         <text x="398" y="188" text-anchor="middle" fill="#62687f" font-size="10">压缩 · 安全头 · 指标归档</text>
