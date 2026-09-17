@@ -406,7 +406,7 @@ footer { margin-top: 110px; border-top: 1px solid rgba(255,255,255,0.07); paddin
 </nav>
 
 <header class="hero wrap" id="top">
-  <div class="hero-badge"><span class="dot"></span>v2.2.13 · 双平台镜像 linux/amd64 · linux/arm64</div>
+  <div class="hero-badge"><span class="dot"></span>v2.3.0 · OIDC 单点登录 · 双平台镜像 linux/amd64 · linux/arm64</div>
   <h1 class="hero-title">负载均衡,本应如此<br><span class="grad">简单而强大</span></h1>
   <p class="hero-sub">
     基于 <b>Caddy</b> 的可视化负载均衡管理平台——<b>端到端 Go</b>、<b>Alpine 精简底座</b>、
@@ -613,6 +613,16 @@ footer { margin-top: 110px; border-top: 1px solid rgba(255,255,255,0.07); paddin
       <h3>API 与 MCP 双通道</h3>
       <p>全量 REST API + OpenAPI 文档,127 个 MCP 工具直连 Claude/Cursor 等 AI 助手。人可点,机可编,运维进入对话时代。</p>
     </div>
+    <div class="f-card reveal">
+      <div class="f-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#4f8cff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="7" width="16" height="12" rx="2.5"/><path d="M8 7V5.5A4 4 0 0 1 12 2a4 4 0 0 1 4 3.5V7"/><circle cx="12" cy="13" r="2.2"/></svg></div>
+      <h3>OIDC 单点登录</h3>
+      <p>标准 OIDC 对接企业认证服务(Microsoft Entra、Keycloak 等),PKCE + JWKS 验签,首次登录自动开户;本地管理员账号始终保留兜底。</p>
+    </div>
+    <div class="f-card reveal">
+      <div class="f-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 11l4 4 4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></div>
+      <h3>分类备份 lbbak</h3>
+      <p>配置打包为 lbbak 备份(含 CRS/IP2Region 数据文件,逐条目校验和),按分类选择性导入导出;V1(nginx 版)备份兼容迁移。</p>
+    </div>
   </div>
 </section>
 
@@ -620,7 +630,7 @@ footer { margin-top: 110px; border-top: 1px solid rgba(255,255,255,0.07); paddin
   <div class="sec-head reveal">
     <div class="sec-tag">ENTERPRISE</div>
     <h2 class="sec-title">企业级能力,开箱即用</h2>
-    <p class="sec-desc">多人协作、多节点部署、强身份保护、全程留痕、自有品牌、内建防火墙——不需要任何插件。</p>
+    <p class="sec-desc">单点登录、多人协作、多节点部署、强身份保护、全程留痕、自有品牌、内建防火墙——不需要任何插件。</p>
   </div>
   <div class="features">
     <div class="f-card reveal">
@@ -631,12 +641,12 @@ footer { margin-top: 110px; border-top: 1px solid rgba(255,255,255,0.07); paddin
     <div class="f-card reveal">
       <div class="f-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#4f8cff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.7-3.1 2.9-4.7 5.5-4.7s4.8 1.6 5.5 4.7"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.6c2.4.4 4.3 1.9 5 4.4"/></svg></div>
       <h3>多用户与角色权限</h3>
-      <p>管理员与只读角色分明:全员默认全局可读,仅管理员可写;普通用户自助改密、管理本人 API 密钥(强制只读)。从节点全员只读,数据以主节点为准。</p>
+      <p>管理员与只读角色分明,OIDC 单点登录用户随企业认证自动开户、身份信息随 IdP 同步;本地账号与 SSO 账号并存,本地管理员始终保留。从节点全员只读,数据以主节点为准。</p>
     </div>
     <div class="f-card reveal">
       <div class="f-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="3" width="10" height="18" rx="2.5"/><path d="M10.5 17.5h3"/><path d="M12 8.5l1.2 2.4 2.6.4-1.9 1.9.4 2.6-2.3-1.2-2.3 1.2.4-2.6-1.9-1.9 2.6-.4L12 8.5z"/></svg></div>
       <h3>MFA 两步验证</h3>
-      <p>TOTP 认证器绑定,登录与敏感操作弹码二次确认;登录失败 5 次/10 分钟自动锁定,恢复码兜底。机器身份走 API 密钥通道,互不影响。</p>
+      <p>本地账号 TOTP 认证器绑定,登录与敏感操作弹码二次确认;登录失败自动锁定,恢复码兜底。OIDC 用户二因子由企业认证服务承担,两套体系完全解耦。</p>
     </div>
     <div class="f-card reveal">
       <div class="f-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v13H4z"/><path d="M8 9h8M8 13h5"/><path d="M16 18l3 3M19 18l-3 3"/></svg></div>
@@ -756,7 +766,7 @@ footer { margin-top: 110px; border-top: 1px solid rgba(255,255,255,0.07); paddin
         <rect x="40" y="96" width="220" height="128" rx="16" fill="rgba(79,140,255,0.08)" stroke="rgba(79,140,255,0.5)"/>
         <text x="150" y="132" text-anchor="middle" fill="#e8eaf2" font-size="15" font-weight="700">主节点</text>
         <text x="150" y="156" text-anchor="middle" fill="#62687f" font-size="11.5">面板 / API 唯一写入口</text>
-        <text x="150" y="178" text-anchor="middle" fill="#62687f" font-size="11.5">写操作 → 版本号 +1</text>
+        <text x="150" y="178" text-anchor="middle" fill="#62687f" font-size="11.5">配置·用户·OIDC·规则库随快照</text>
         <text x="150" y="200" text-anchor="middle" fill="#38e1ff" font-size="11.5">快照签名签发</text>
         <!-- 下发干线 + 三分支(分支无箭头,端点单箭头) -->
         <path d="M264 160 L330 160" stroke="rgba(52,211,153,0.6)" stroke-width="2"/>
@@ -772,7 +782,7 @@ footer { margin-top: 110px; border-top: 1px solid rgba(255,255,255,0.07); paddin
         <text x="516" y="89" text-anchor="middle" fill="#62687f" font-size="11">增量回放 · 配置只读</text>
         <rect x="416" y="129" width="200" height="62" rx="13" fill="rgba(52,211,153,0.07)" stroke="rgba(52,211,153,0.4)"/>
         <text x="516" y="155" text-anchor="middle" fill="#34d399" font-size="13.5" font-weight="600">从节点 2</text>
-        <text x="516" y="176" text-anchor="middle" fill="#62687f" font-size="11">漂移检测自动对账</text>
+        <text x="516" y="176" text-anchor="middle" fill="#62687f" font-size="11">漂移对账 · 规则库跟随同步</text>
         <rect x="416" y="216" width="200" height="62" rx="13" fill="rgba(52,211,153,0.07)" stroke="rgba(52,211,153,0.4)"/>
         <text x="516" y="242" text-anchor="middle" fill="#34d399" font-size="13.5" font-weight="600">从节点 N</text>
         <text x="516" y="263" text-anchor="middle" fill="#62687f" font-size="11">扩容 = 再开一个容器</text>
@@ -785,7 +795,7 @@ footer { margin-top: 110px; border-top: 1px solid rgba(255,255,255,0.07); paddin
         <rect x="764" y="96" width="150" height="128" rx="16" fill="rgba(255,255,255,0.035)" stroke="rgba(255,255,255,0.14)"/>
         <text x="839" y="132" text-anchor="middle" fill="#e8eaf2" font-size="14" font-weight="700">节点健康面板</text>
         <text x="839" y="156" text-anchor="middle" fill="#62687f" font-size="11">定时状态上报</text>
-        <text x="839" y="178" text-anchor="middle" fill="#62687f" font-size="11">配置版本比对</text>
+        <text x="839" y="178" text-anchor="middle" fill="#62687f" font-size="11">配置 · 规则库版本比对</text>
         <text x="839" y="200" text-anchor="middle" fill="#fbbf24" font-size="11">票据化遥控启停</text>
       </svg>
     </div>
