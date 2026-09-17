@@ -1,7 +1,8 @@
 # Lazy Balancer V2 官网 · 维护与发布流程(固化)
 
-官网唯一仓库:**https://git.xiaobao.cool/zhang/lazy-balancer-site**
+官网仓库双远端:**https://git.xiaobao.cool/zhang/lazy-balancer-site**(origin)+ **https://github.com/v55448330/lazy-balancer-site**(github)——每次提交双推:`git push origin master && git push github master`
 官网镜像:**registry.xiaobao.cool/zhang/lazy-balancer-site:<tag>**(仅 linux/amd64)
+官网发布:**GitHub Pages**(github 远端 master 分支根目录直接托管,index.html 即首页,assets/ 相对路径天然兼容)——Pages 在 GitHub 仓库 Settings → Pages 启用(Source: master / root);自有域名可在同页配 Custom domain 或仓库根放 `CNAME` 文件
 
 ---
 
@@ -38,7 +39,8 @@
    ```
    - **仅 amd64**(用户裁定);arm64 宿主机跨平台构建即可
    - **tag 必须询问用户**,不得自行递增(与主产品同一底线)
-   - 推送前 `docker login registry.xiaobao.cool`(**地址不带端口**——带 :443 会与登录条目不匹配报 access forbidden,2026-09-17 实证)
+   - 推送前 `docker login registry.xiaobao.cool`
+   - GitHub Pages 随 master 推送自动发布,无需镜像步骤(**地址不带端口**——带 :443 会与登录条目不匹配报 access forbidden,2026-09-17 实证)
 
 ---
 
