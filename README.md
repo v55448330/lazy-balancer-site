@@ -41,6 +41,8 @@ python3 -m http.server     # 或任意静态服务器
 
 `assets/` 下 9 张 webp 截图:仪表盘/负载均衡/安全总览/安全策略/规则集/事件日志/集群管理/免费证书/操作日志。
 
-## 部署
+## 发布
 
-任意静态托管均可(GitHub Pages / Nginx / OSS):整站仅 `index.html` + `assets/`。
+**GitHub Pages** 唯一通道:`github` 远端(`v55448330/lazy-balancer-site`)master 分支根目录托管,推送即自动发布——无需 Docker 镜像/容器(已于 2026-09-17 裁撤)。线上:**www.lazybalancer.org**(CNAME 在仓库根)。
+
+每次修改:`git push origin master && git push github master`(双远端)。
