@@ -529,8 +529,8 @@ footer { margin-top: 110px; border-top: 1px solid rgba(255,255,255,0.07); paddin
     </div>
     <div class="f-card reveal">
       <div class="f-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 11l4 4 4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></div>
-      <h3>分类备份 lbbak</h3>
-      <p>配置打包为 lbbak 备份（含 CRS/IP2Region 数据文件，逐条目校验和），按分类选择性导入导出;V1(nginx 版）备份兼容迁移。</p>
+      <h3>备份与恢复</h3>
+      <p>配置打包为 lbbak 备份（含 CRS/IP2Region 数据文件，逐条目校验和），按分类选择性导入导出;支持按日/周/月定时自动备份,保留份数自动清理,一键还原整站配置。</p>
     </div>
   </div>
 </section>
@@ -655,13 +655,8 @@ footer { margin-top: 110px; border-top: 1px solid rgba(255,255,255,0.07); paddin
     </div>
     <div class="f-card reveal">
       <div class="f-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#4f8cff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.7-3.1 2.9-4.7 5.5-4.7s4.8 1.6 5.5 4.7"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.6c2.4.4 4.3 1.9 5 4.4"/></svg></div>
-      <h3>多用户与角色权限</h3>
-      <p>管理员与只读角色分明,OIDC 单点登录用户随企业认证自动开户、身份信息随 IdP 同步；本地账号与 SSO 账号并存，本地管理员始终保留。从节点全员只读，数据以主节点为准。</p>
-    </div>
-    <div class="f-card reveal">
-      <div class="f-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="3" width="10" height="18" rx="2.5"/><path d="M10.5 17.5h3"/><path d="M12 8.5l1.2 2.4 2.6.4-1.9 1.9.4 2.6-2.3-1.2-2.3 1.2.4-2.6-1.9-1.9 2.6-.4L12 8.5z"/></svg></div>
-      <h3>MFA 两步验证</h3>
-      <p>本地账号 TOTP 认证器绑定，登录与敏感操作弹码二次确认；登录失败自动锁定，恢复码兜底。OIDC 用户二因子由企业认证服务承担，两套体系完全解耦。</p>
+      <h3>多用户与身份安全</h3>
+      <p>管理员与只读角色分明,从节点全员只读;本地账号可绑定 TOTP 两步验证——登录二次确认、敏感操作弹码、恢复码兜底、失败自动锁定;OIDC 用户随企业认证自动开户,身份与二因子由 IdP 承担,两套体系解耦并存,本地管理员始终保留。</p>
     </div>
     <div class="f-card reveal">
       <div class="f-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v13H4z"/><path d="M8 9h8M8 13h5"/><path d="M16 18l3 3M19 18l-3 3"/></svg></div>
