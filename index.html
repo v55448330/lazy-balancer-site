@@ -440,8 +440,10 @@ footer { margin-top: 110px; border-top: 1px solid rgba(255,255,255,0.07); paddin
       <div>&nbsp;&nbsp;<span class="t-w">--network host --restart unless-stopped \</span></div>
       <div>&nbsp;&nbsp;<span class="t-w">-v lb-data:/app/data -v lb-certs:/app/certs \</span></div>
       <div>&nbsp;&nbsp;<span class="t-w">-v lb-logs:/app/logs -v lb-waf:/app/waf \</span></div>
+      <div>&nbsp;&nbsp;<span class="t-w">-v lb-backup:/app/backup \</span></div>
       <div>&nbsp;&nbsp;<span class="t-w">v55448330/lazy-balancer-v2:<span class="t-v">latest</span></span></div>
       <div><span class="t-c"># 挂载说明：/app/data 数据库与配置（必需） /app/certs 证书私钥（必需）</span></div>
+      <div><span class="t-c">#           /app/backup 自动备份落盘（必需）——不挂载则重建容器后丢失</span></div>
       <div><span class="t-c">#           /app/logs 日志（推荐）      /app/waf 规则库与 GeoIP（推荐）</span></div>
       <div><span class="t-s">✓ 管理面板  http://localhost:8000</span></div>
       <div><span class="t-s">✓ 规则 / WAF / 证书 / 集群 — 全部可视化</span></div>
@@ -963,6 +965,7 @@ footer { margin-top: 110px; border-top: 1px solid rgba(255,255,255,0.07); paddin
         <b style="color: var(--text);">挂载说明（启动命令同款）</b>&nbsp;&nbsp;
         <span style="white-space: nowrap;"><code style="display: inline; padding: 2px 8px; border-radius: 6px;">/app/data</code> 数据库与配置（必需）</span> ·
         <span style="white-space: nowrap;"><code style="display: inline; padding: 2px 8px; border-radius: 6px;">/app/certs</code> 证书与私钥（必需）</span> ·
+        <span style="white-space: nowrap;"><code style="display: inline; padding: 2px 8px; border-radius: 6px;">/app/backup</code> 自动备份落盘（必需）</span> ·
         <span style="white-space: nowrap;"><code style="display: inline; padding: 2px 8px; border-radius: 6px;">/app/logs</code> 应用与访问日志（推荐）</span> ·
         <span style="white-space: nowrap;"><code style="display: inline; padding: 2px 8px; border-radius: 6px;">/app/waf</code> 规则库与 GeoIP（推荐）</span>
       </p>
