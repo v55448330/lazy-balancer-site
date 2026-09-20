@@ -447,7 +447,7 @@ footer { margin-top: 110px; border-top: 1px solid rgba(255,255,255,0.07); paddin
 </nav>
 
 <header class="hero wrap" id="top">
-  <div class="hero-badge"><span class="dot"></span>稳定版 v2.2.13 · 测试版 v2.3.0（含 OIDC 单点登录） · 双平台镜像 linux/amd64 · linux/arm64</div>
+  <div class="hero-badge"><span class="dot"></span>稳定版 v2.3.0 · 测试版 v2.3.1（阶段化安全流水线） · 双平台镜像 linux/amd64 · linux/arm64</div>
   <h1 class="hero-title">负载均衡，本应如此<br><span class="grad">简单而强大</span></h1>
   <p class="hero-sub">
     基于 <b>Caddy</b> 的可视化负载均衡管理平台——<b>端到端 Go</b>、<b>Alpine 精简底座</b>、
@@ -858,30 +858,30 @@ footer { margin-top: 110px; border-top: 1px solid rgba(255,255,255,0.07); paddin
           <marker id="ah6" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0 0 L8 4.5 L0 9 Z" fill="#f87171"/></marker>
           <marker id="ah7" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0 0 L8 4.5 L0 9 Z" fill="#34d399"/></marker>
         </defs>
-        <!-- 主链路：请求向（左→右） -->
+        <!-- 主链路：请求向（左→右）· v2.3.1 阶段化安全流水线 -->
         <rect x="20" y="60" width="130" height="70" rx="13" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.14)"/>
         <text x="85" y="88" text-anchor="middle" fill="#e8eaf2" font-size="12.5" font-weight="600">HTTPS 请求</text>
         <text x="85" y="109" text-anchor="middle" fill="#62687f" font-size="10">app.example.com</text>
         <path d="M154 95 L178 95" stroke="rgba(79,140,255,0.75)" stroke-width="2" marker-end="url(#ah5)"/>
-        <rect x="184" y="60" width="130" height="70" rx="13" fill="rgba(79,140,255,0.08)" stroke="rgba(79,140,255,0.4)"/>
-        <text x="249" y="86" text-anchor="middle" fill="#e8eaf2" font-size="12.5" font-weight="600">① 规则匹配</text>
-        <text x="249" y="106" text-anchor="middle" fill="#62687f" font-size="10">域名+端口 · 指标注入</text>
-        <text x="249" y="121" text-anchor="middle" fill="#62687f" font-size="10">规则 ID 头标记</text>
+        <rect x="184" y="60" width="130" height="70" rx="13" fill="rgba(52,211,153,0.07)" stroke="rgba(52,211,153,0.4)"/>
+        <text x="249" y="86" text-anchor="middle" fill="#e8eaf2" font-size="12.5" font-weight="600">① 信任名单</text>
+        <text x="249" y="106" text-anchor="middle" fill="#62687f" font-size="10">阶段 0 · 命中直通上游</text>
+        <text x="249" y="121" text-anchor="middle" fill="#62687f" font-size="10">或保留检测记录</text>
         <path d="M318 95 L342 95" stroke="rgba(79,140,255,0.75)" stroke-width="2" marker-end="url(#ah5)"/>
         <rect x="348" y="60" width="130" height="70" rx="13" fill="rgba(56,225,255,0.07)" stroke="rgba(56,225,255,0.4)"/>
-        <text x="413" y="86" text-anchor="middle" fill="#e8eaf2" font-size="12.5" font-weight="600">② IP 预检</text>
-        <text x="413" y="106" text-anchor="middle" fill="#62687f" font-size="10">多策略集中：黑/白/信任</text>
+        <text x="413" y="86" text-anchor="middle" fill="#e8eaf2" font-size="12.5" font-weight="600">② IP 访问控制</text>
+        <text x="413" y="106" text-anchor="middle" fill="#62687f" font-size="10">阶段 1 · 黑白名单·地域</text>
         <text x="413" y="121" text-anchor="middle" fill="#62687f" font-size="10">拒绝即断，零深层消耗</text>
         <path d="M482 95 L506 95" stroke="rgba(79,140,255,0.75)" stroke-width="2" marker-end="url(#ah5)"/>
         <rect x="512" y="60" width="130" height="70" rx="13" fill="rgba(251,191,36,0.07)" stroke="rgba(251,191,36,0.4)"/>
         <text x="577" y="86" text-anchor="middle" fill="#e8eaf2" font-size="12.5" font-weight="600">③ 限流</text>
-        <text x="577" y="106" text-anchor="middle" fill="#62687f" font-size="10">按源地址速率+突发</text>
-        <text x="577" y="121" text-anchor="middle" fill="#62687f" font-size="10">超限返回 429</text>
+        <text x="577" y="106" text-anchor="middle" fill="#62687f" font-size="10">阶段 2 · 源速率+突发</text>
+        <text x="577" y="121" text-anchor="middle" fill="#62687f" font-size="10">超限恒 429</text>
         <path d="M646 95 L670 95" stroke="rgba(79,140,255,0.75)" stroke-width="2" marker-end="url(#ah5)"/>
         <rect x="676" y="60" width="140" height="70" rx="13" fill="rgba(139,92,246,0.09)" stroke="rgba(139,92,246,0.45)"/>
-        <text x="746" y="86" text-anchor="middle" fill="#e8eaf2" font-size="12.5" font-weight="600">④ WAF 策略组</text>
-        <text x="746" y="106" text-anchor="middle" fill="#62687f" font-size="10">规则集+自定义 · 地域</text>
-        <text x="746" y="121" text-anchor="middle" fill="#62687f" font-size="10">异常评分累计</text>
+        <text x="746" y="86" text-anchor="middle" fill="#e8eaf2" font-size="12.5" font-weight="600">④ WAF</text>
+        <text x="746" y="106" text-anchor="middle" fill="#62687f" font-size="10">阶段 3 · 逐策略独立引擎</text>
+        <text x="746" y="121" text-anchor="middle" fill="#62687f" font-size="10">自定义规则 + CRS 评分</text>
         <!-- 放行进 ⑤(④下方左折，箭头朝左入 ⑤) -->
         <path d="M746 134 L746 172 L700 172" stroke="rgba(52,211,153,0.7)" stroke-width="2" fill="none" marker-end="url(#ah7)"/>
         <rect x="540" y="140" width="152" height="64" rx="13" fill="rgba(52,211,153,0.08)" stroke="rgba(52,211,153,0.4)"/>
@@ -891,15 +891,19 @@ footer { margin-top: 110px; border-top: 1px solid rgba(255,255,255,0.07); paddin
         <rect x="322" y="140" width="152" height="64" rx="13" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.16)"/>
         <text x="398" y="167" text-anchor="middle" fill="#e8eaf2" font-size="12.5" font-weight="600">⑥ 响应</text>
         <text x="398" y="188" text-anchor="middle" fill="#62687f" font-size="10">压缩 · 安全头 · 指标归档</text>
+        <!-- 信任直达：① 命中跳过后续全部阶段，左折下沿入 ⑤ 底部 -->
+        <path d="M249 134 L249 222 L608 222 L608 208" stroke="rgba(52,211,153,0.7)" stroke-width="2" fill="none" marker-end="url(#ah7)"/>
+        <text x="243" y="162" text-anchor="end" fill="#34d399" font-size="10.5">信任命中</text>
+        <text x="243" y="176" text-anchor="end" fill="#34d399" font-size="10.5">直达上游</text>
         <!-- 拦截支路:②③④ 底部短虚线汇入公共横线，再进拦截框（互不压线） -->
         <path d="M413 134 L413 238 M577 134 L577 238 M746 134 L746 238" stroke="rgba(248,113,113,0.45)" stroke-width="1.8" stroke-dasharray="5 4"/>
         <path d="M413 238 L746 238" stroke="rgba(248,113,113,0.45)" stroke-width="1.8" stroke-dasharray="5 4"/>
         <path d="M580 238 L580 258" stroke="rgba(248,113,113,0.65)" stroke-width="2" marker-end="url(#ah6)"/>
         <rect x="330" y="264" width="500" height="66" rx="14" fill="rgba(248,113,113,0.08)" stroke="rgba(248,113,113,0.4)"/>
-        <text x="580" y="292" text-anchor="middle" fill="#f87171" font-size="13" font-weight="600">拦截分支:② 黑名单 ③ 超限 ④ 评分达标</text>
-        <text x="580" y="314" text-anchor="middle" fill="#62687f" font-size="10.5">自定义品牌拦截页(400/401/403/404/429/503)+ 事件日志逐条留痕</text>
+        <text x="580" y="292" text-anchor="middle" fill="#f87171" font-size="13" font-weight="600">拦截分支:② IP/地域拒绝 ③ 超限 429 ④ 规则/评分命中</text>
+        <text x="580" y="314" text-anchor="middle" fill="#62687f" font-size="10.5">规则可配阶段拦截页覆盖；未配按触发策略归因(400/401/403/404/429/503) · 事件逐条留痕</text>
         <!-- 图注 -->
-        <text x="30" y="368" fill="#62687f" font-size="11.5">②③④ 任一环节拒绝，请求都不会触达上游——拦截面即成本面。</text>
+        <text x="30" y="368" fill="#62687f" font-size="11.5">②③④ 任一环节拒绝都不会触达上游——拦截面即成本面；信任命中则跳过后续全部阶段。</text>
       </svg>
     </div>
   </div>
