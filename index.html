@@ -463,10 +463,10 @@ var _hmt = _hmt || [];
   <div class="hero-badge"><span class="dot"></span>v2.3.2（阶段化安全流水线） · 双平台镜像 linux/amd64 · linux/arm64</div>
   <h1 class="hero-title">负载均衡，本应如此<br><span class="grad">简单而强大</span></h1>
   <p class="hero-sub">
-    基于 <b>Caddy</b> 的可视化负载均衡管理平台——<b>端到端 Go</b>、<b>Alpine 精简底座</b>、
-    <b>58 MB 起</b>的一体化镜像：WAF 四态防护、ACME 自动证书、集群主从同步、
-    <b>128 个 MCP 工具</b>的 AI 原生运维，一个二进制全部就绪。
-    企业级开箱：<b>OIDC 单点登录</b>、MFA 两步验证、全操作审计、多用户权限。
+    基于 <b>Caddy</b> 的可视化负载均衡管理平台——<b>WAF 四态防护</b>（OWASP CRS + 地域拦截 + 多来源威胁情报库）、
+    <b>ACME 自动证书</b>、<b>集群主从同步</b>，一个二进制全部就绪。
+    端到端 Go、Alpine 精简底座 58 MB 起；<b>128 个 MCP 工具</b>的 AI 原生运维，
+    OIDC 单点登录、MFA 两步验证、全操作审计企业级开箱。
   </p>
   <div class="hero-actions">
     <a class="btn btn-primary" href="#start">立即部署 →</a>
@@ -546,7 +546,7 @@ var _hmt = _hmt || [];
     <div class="f-card reveal">
       <div class="f-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#38e1ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3.5v5c0 5-3.4 8.4-8 9.5-4.6-1.1-8-4.5-8-9.5v-5L12 3z"/><path d="M9 12l2 2 4-4.5"/></svg></div>
       <h3>企业级 WAF</h3>
-      <p>Coraza v3 + OWASP CRS,关闭/仅自定义/检测/拦截四态。IP 黑白名单、信任名单、GeoIP 地域控制、IP 级限流、自定义链式规则。</p>
+      <p>Coraza v3 + OWASP CRS,关闭/仅自定义/检测/拦截四态。IP 黑白名单（可引用多来源威胁情报库名单）、信任名单、GeoIP 地域控制、IP 级限流、自定义链式规则。</p>
     </div>
     <div class="f-card reveal">
       <div class="f-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15" r="1.4"/></svg></div>
@@ -660,7 +660,7 @@ var _hmt = _hmt || [];
     <div class="shield reveal">
       <div class="si">🚫</div>
       <h4>黑白名单</h4>
-      <p>按地址段精确放行或拒绝，支持引用共享地址列表</p>
+      <p>按地址段精确放行或拒绝，支持引用共享地址列表与内置威胁情报名单（USTC / FireHOL / ET 三源每日自动更新）</p>
     </div>
     <div class="shield reveal">
       <div class="si">🤝</div>

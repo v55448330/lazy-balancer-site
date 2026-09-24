@@ -350,15 +350,13 @@ footer { border-top: 1px solid rgba(255,255,255,0.06); padding: 34px 0 44px; }
       - ./certs:/app/certs      <span class="c"># 证书材料</span>
       - ./waf:/app/waf          <span class="c"># WAF 规则库与 IP 库</span>
       - ./backup:/app/backup    <span class="c"># 自动备份落盘</span>
-    environment:
-      - TZ=Asia/Shanghai
-    restart: unless-stopped
+    restart: unless-stopped   <span class="c"># 时区无需环境变量——面板「基础设置 → 时区」统一控制</span>
 <span class="k">volumes:</span>
   lb-data:</code></pre>
   <p>不用 compose 的话，一条 <code>docker run</code> 等价：</p>
   <pre><code>docker run -d --name lazy-balancer --network host --restart unless-stopped \
   -v lb-data:/app/data -v ./logs:/app/logs -v ./certs:/app/certs \
-  -v ./waf:/app/waf -v ./backup:/app/backup -e TZ=Asia/Shanghai \
+  -v ./waf:/app/waf -v ./backup:/app/backup \
   v55448330/lazy-balancer-v2:v2.3.2</code></pre>
   <div class="callout info"><b>端口说明。</b>80/443 是网站流量入口（Caddy），<b>8000 是管理面板</b>（浏览器访问 <code>https://&lt;服务器IP&gt;:8000</code>）。面板默认强制 HTTPS，首次访问接受一下自签证书即可。</div>
   <div class="callout info"><b>想要从节点（高可用）？</b>同样的镜像再起一个实例，面板里切换到「从节点」并指向主节点地址（如 <code>http://主节点IP:8000</code>）即可，详见第 6 章。</div>
