@@ -561,7 +561,7 @@ footer { border-top: 1px solid rgba(255,255,255,0.06); padding: 34px 0 44px; }
   -H "Authorization: Bearer lb_sk_..."</code></pre>
 
   <h3>8.2 MCP（AI Agent 接入）</h3>
-  <p>面板内置 MCP 服务（<code>POST /api/v1/mcp</code>），注册 <b>128 个工具</b>：规则、策略、证书、集群、审计、诊断全覆盖。给 Agent 发一把开了 MCP 的 API Key（建议只读+IP 白名单），Claude Code / Cursor 等客户端即可直接运维你的负载均衡。配套运维手册（playbook）随服务下发，Agent 拿到就知道怎么按正确顺序操作。</p>
+  <p>面板内置 MCP 服务（<code>POST /api/v1/mcp</code>），注册 <b>129 个工具</b>：规则、策略、证书、集群、审计、诊断全覆盖。给 Agent 发一把开了 MCP 的 API Key（建议只读+IP 白名单），Claude Code / Cursor 等客户端即可直接运维你的负载均衡。配套运维手册（playbook）随服务下发，Agent 拿到就知道怎么按正确顺序操作。</p>
   <div class="callout info"><b>注意。</b>MCP 工具的可见性跟随 Key 的权限：只读 Key 只能看到和使用只读工具；写操作与导出类能力需要读写 Key。</div>
 </section>
 
