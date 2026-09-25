@@ -301,6 +301,7 @@ footer { border-top: 1px solid rgba(255,255,255,0.06); padding: 34px 0 44px; }
     <a href="#settings"><span class="num">7</span>系统设置</a>
     <a href="#api"><span class="num">8</span>API 与自动化</a>
     <a href="#ops"><span class="num">9</span>运维手册</a>
+    <a href="#changelog"><span class="num">10</span>更新日志</a>
   </aside>
   <div class="toc-chips" id="toc-chips">
     <a href="#quickstart">快速上手</a>
@@ -312,6 +313,7 @@ footer { border-top: 1px solid rgba(255,255,255,0.06); padding: 34px 0 44px; }
     <a href="#settings">系统设置</a>
     <a href="#api">API 与自动化</a>
     <a href="#ops">运维手册</a>
+    <a href="#changelog">更新日志</a>
   </div>
 
   <main class="docs-content prose">
@@ -592,6 +594,34 @@ footer { border-top: 1px solid rgba(255,255,255,0.06); padding: 34px 0 44px; }
   <div class="faq-item"><summary>自动更新失败会怎样？</summary><div class="faq-body">已安装的版本继续服役（防护不受影响），任务按 1h→2h→4h→8h→24h 退避重试，连续失败会在卡片与操作日志可见。网络恢复后自动回到排程节奏。</div></div>
   <div class="faq-item"><summary>从节点一直「等待审批/不同步」？</summary><div class="faq-body">依次核对：主节点「节点列表」是否已批准；从节点填的主节点地址能否互通（防火墙/端口）；时间差是否过大（证书校验对时间敏感）；从节点面板的「最近同步」错误信息。证书指纹不匹配时在从节点「清除节点证书指纹」后重新注册。</div></div>
   <div class="faq-item"><summary>证书签发失败常见原因？</summary><div class="faq-body">九成是 DNS 凭证问题：密钥权限不足（需要域名解析读写）、域名不在该账号下、或 API 临时故障。先看任务详情里的错误原文；其次是 CA 频率限制——等待冷却自动重试即可，不要反复手动重试。</div></div>
+</section>
+
+<!-- ═══════════ 10. 更新日志 ═══════════ -->
+<section id="changelog">
+  <h2><span class="ch">10</span>更新日志</h2>
+  <p class="sec-sub">每个版本改了什么、为什么值得升级——最新的在最前面。</p>
+
+  <h3>v2.3.2（当前版本）</h3>
+  <p>主题：威胁情报、性能与部署适配。</p>
+  <ul>
+    <li><b>新增 · 威胁 IP 情报库</b>：内置中科大（USTC）、FireHOL、Emerging Threats 三个权威来源，每天自动更新；在黑名单与 IP 访问控制中一键引用，不用再手工维护地址清单。</li>
+    <li><b>新增 · 规则库更新排程</b>：CRS / IP2Region / 威胁库的自动更新日期和时间由你定（默认每天凌晨），避开业务高峰。</li>
+    <li><b>新增 · 三套内置拦截页</b>：403 禁止访问、429 限流、系统维护，全新设计开箱即用，可直接选用也可在此基础上改写。</li>
+    <li><b>新增 · 拦截页内容类型</b>：预置 HTML / JSON / XML / 纯文本（含编码）——对接 API 的站点被拦时可以直接返回 JSON 错误体，不再只有网页一种形态。</li>
+    <li><b>新增 · 受信代理（真实 IP）</b>：面板部署在 CDN 或反向代理之后时，也能取得访客真实 IP——黑白名单、限流、地域拦截不再把 CDN 节点当成访客。</li>
+    <li><b>优化 · IP 地址列表</b>：上万条条目流畅编辑不卡顿；底层 IP 比对算法重写，极端场景提速 10–100 倍。</li>
+    <li><b>优化 · 界面一致性</b>：页面布局与弹框样式统一，多处交互细节打磨。</li>
+    <li><b>修复</b>：若干已知问题。</li>
+  </ul>
+
+  <h3>v2.3.1</h3>
+  <p>主题：企业认证、自动备份与安全模块重构。</p>
+  <ul>
+    <li><b>新增 · 企业级 SSO</b>：支持 OIDC 单点登录，接入组织统一认证体系，本地账号保留兜底。</li>
+    <li><b>新增 · 自动备份</b>：按天 / 周 / 月定时备份配置到本地，保留份数可调，支持一键还原。</li>
+    <li><b>重构 · 安全模块</b>：安全策略按流量处理阶段拆分——信任名单 → IP 访问控制（含地域拦截）→ 限流 → WAF（CRS 规则库与自定义规则双通道）；旧版混合策略自动兼容迁移，可一键拆分为分阶段策略。</li>
+    <li><b>新增 · 拦截页自定义</b>：可按整条规则或单条安全策略选择不同的拦截页面，不同阶段各配各的。</li>
+  </ul>
 </section>
 
   </main>
