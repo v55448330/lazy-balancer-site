@@ -285,7 +285,7 @@ footer { border-top: 1px solid rgba(255,255,255,0.06); padding: 34px 0 44px; }
   <div class="wrap">
     <div class="kicker">USER MANUAL</div>
     <h1>用户手册 — <em>照着做就能用起来</em></h1>
-    <p>从部署到上线的完整指南：先跑起来，再发第一条规则，然后逐步打开安全防护、证书、集群与自动化。每一节都按「是什么 → 在哪进 → 怎么用 → 注意点」组织，对应面板版本 v2.3.2。</p>
+    <p>从部署到上线的完整指南：先跑起来，再发第一条规则，然后逐步打开安全防护、证书、集群与自动化。每一节都按「是什么 → 在哪进 → 怎么用 → 注意点」组织，对应面板版本 v2.3.3。</p>
   </div>
 </header>
 
@@ -347,7 +347,7 @@ footer { border-top: 1px solid rgba(255,255,255,0.06); padding: 34px 0 44px; }
   <p>只需要 Docker。把下面内容存为 <code>docker-compose.yml</code>，然后 <code>docker compose up -d</code> 就完成了——镜像里已包含全部组件（Caddy、管理面板、WAF 规则库、IP 地理库）。</p>
   <pre><code><span class="k">services:</span>
   lazy-balancer:
-    image: v55448330/lazy-balancer-v2:v2.3.2
+    image: v55448330/lazy-balancer-v2:v2.3.3
     container_name: lazy-balancer
     network_mode: host          <span class="c"># Caddy 直接监听宿主 80/443</span>
     volumes:
@@ -363,7 +363,7 @@ footer { border-top: 1px solid rgba(255,255,255,0.06); padding: 34px 0 44px; }
   <pre><code>docker run -d --name lazy-balancer --network host --restart unless-stopped \
   -v lb-data:/app/data -v ./logs:/app/logs -v ./certs:/app/certs \
   -v ./waf:/app/waf -v ./backup:/app/backup \
-  v55448330/lazy-balancer-v2:v2.3.2</code></pre>
+  v55448330/lazy-balancer-v2:v2.3.3</code></pre>
   <div class="callout info"><b>端口说明。</b>80/443 是网站流量入口（Caddy），<b>8000 是管理面板</b>（浏览器访问 <code>https://&lt;服务器IP&gt;:8000</code>）。面板默认强制 HTTPS，首次访问接受一下自签证书即可。</div>
   <div class="callout info"><b>想要从节点（高可用）？</b>同样的镜像再起一个实例，面板里切换到「从节点」并指向主节点地址（如 <code>http://主节点IP:8000</code>）即可，详见第 6 章。</div>
 
@@ -601,7 +601,20 @@ footer { border-top: 1px solid rgba(255,255,255,0.06); padding: 34px 0 44px; }
   <h2><span class="ch">10</span>更新日志</h2>
   <p class="sec-sub">每个版本改了什么、为什么值得升级——最新的在最前面。</p>
 
-  <h3>v2.3.2（当前版本）</h3>
+  <h3>v2.3.3（当前版本）</h3>
+  <p>主题：安全交互重构与事件可观测性。</p>
+  <ul>
+    <li><b>重构 · 安全事件触发详情</b>：全部触发类型（IP 黑白名单 / 地域 / 威胁库 / WAF / 信任）共用统一弹框——头部一眼可读（阶段 → 策略 → 命中源），具体规则 / 地址列表 / CRS 源码展开可见；支持策略组合语义展示（信任豁免中 · 命中不拦截 · 事件记为检测）。</li>
+    <li><b>重构 · IP 快捷处置弹框</b>：点击事件中 IP 地址即可按策略卡单击完成拦截 / 放行 / 信任——自动解析既有地址列表，无同侧列表时自动创建「策略名-黑名单 / -白名单 / -信任」并关联加入；策略组合状态实时呈现。</li>
+    <li><b>新增 · 攻击类型分布双模式</b>：总览页支持按阶段五桶（与触发阶段口径一致）或具体分类（SQL注入 / XSS / 扫描探测等）切换展示。</li>
+    <li><b>优化 · 触发阶段筛选</b>：固定四类预置（信任名单 / IP 访问控制 / WAF / 请求体异常），支持输入 CRS 规则 ID 精确筛选。</li>
+    <li><b>修复 · ACL 白名单豁免地域拦截</b>：白名单命中的 IP 不再被地域规则拦截（VIP 豁免语义）。</li>
+    <li><b>修复 · 威胁库重载自愈</b>：更新后 Caddy 重载失败时下轮自动重试（对齐 CRS / IP2Region 家族）。</li>
+    <li><b>修复 · 全链路加固</b>：并发渲染不丢配置、集群同步残缺载荷防御、全空间受信代理网段拒绝等 12 项后端修复。</li>
+    <li><b>优化 · 文档同步</b>：MCP 工具数 / 策略单职化 / 处理流程链序等文档与代码实况对齐。</li>
+  </ul>
+
+  <h3>v2.3.2</h3>
   <p>主题：威胁情报、性能与部署适配。</p>
   <ul>
     <li><b>新增 · 威胁 IP 情报库</b>：内置中科大（USTC）、FireHOL、Emerging Threats 三个权威来源，每天自动更新；在黑名单与 IP 访问控制中一键引用，不用再手工维护地址清单。</li>
