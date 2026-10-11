@@ -572,7 +572,24 @@ footer { border-top: 1px solid rgba(255,255,255,0.06); padding: 34px 0 44px; }
   <pre><code>curl -sk https://127.0.0.1:8000/api/v1/rules \
   -H "Authorization: Bearer lb_sk_..."</code></pre>
 
-  <h3>8.2 MCP（AI Agent 接入）</h3>
+  <h3>8.2 用 API 给规则换证书（手动上传）</h3>
+  <p>已有现成证书（不是自动签发）时，一个请求即可完成更换，适合从自己的签发流程（如内部 CA、证书服务商 API）自动续期：</p>
+  <pre><code>curl -sk -X PUT https://127.0.0.1:8000/api/v1/rules/123 \
+    -H "Authorization: Bearer lb_sk_..." \
+    -H "Content-Type: application/json" \
+    -d '{
+      "tls_source": "manual",
+      "tls_cert": "-----BEGIN CERTIFICATE-----\n...\n-----END CERTIFICATE-----",
+      "tls_key":  "-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----"
+    }'</code></pre>
+  <ul>
+    <li><b>只发改动的字段</b>：其余配置（域名、上游、策略）不发送即保持原样。</li>
+    <li><b>安全回读</b>：GET 返回的私钥是掩码空值——回写时<b>不要</b>把空值发回去，保持材料就不发这两个字段。</li>
+    <li><b>安全网</b>：证书格式错误或与私钥不匹配会直接拒绝，配置校验失败自动回滚，线上不受影响。</li>
+    <li>从自动签发切换到手动（或反向），同样改 <code>tls_source</code> 即可，旧签发任务自动清理。</li>
+  </ul>
+
+  <h3>8.3 MCP（AI Agent 接入）</h3>
   <p>面板内置 MCP 服务（<code>POST /api/v1/mcp</code>），注册 <b>136 个工具</b>：规则、策略、证书、集群、审计、诊断全覆盖。给 Agent 发一把开了 MCP 的 API Key（建议只读+IP 白名单），Claude Code / Cursor 等客户端即可直接运维你的负载均衡。配套运维手册（playbook）随服务下发，Agent 拿到就知道怎么按正确顺序操作。</p>
   <div class="callout info"><b>注意。</b>MCP 工具的可见性跟随 Key 的权限：只读 Key 只能看到和使用只读工具；写操作与导出类能力需要读写 Key。</div>
 </section>
