@@ -285,7 +285,7 @@ footer { border-top: 1px solid rgba(255,255,255,0.06); padding: 34px 0 44px; }
   <div class="wrap">
     <div class="kicker">USER MANUAL</div>
     <h1>用户手册 — <em>照着做就能用起来</em></h1>
-    <p>从部署到上线的完整指南：先跑起来，再发第一条规则，然后逐步打开安全防护、证书、集群与自动化。每一节都按「是什么 → 在哪进 → 怎么用 → 注意点」组织，对应面板版本 v2.3.5。</p>
+    <p>从部署到上线的完整指南：先跑起来，再发第一条规则，然后逐步打开安全防护、证书、集群与自动化。每一节都按「是什么 → 在哪进 → 怎么用 → 注意点」组织，对应面板版本 v2.3.6。</p>
   </div>
 </header>
 
@@ -347,7 +347,7 @@ footer { border-top: 1px solid rgba(255,255,255,0.06); padding: 34px 0 44px; }
   <p>只需要 Docker。把下面内容存为 <code>docker-compose.yml</code>，然后 <code>docker compose up -d</code> 就完成了——镜像里已包含全部组件（Caddy、管理面板、WAF 规则库、IP 地理库）。</p>
   <pre><code><span class="k">services:</span>
   lazy-balancer:
-    image: v55448330/lazy-balancer-v2:v2.3.5
+    image: v55448330/lazy-balancer-v2:v2.3.6
     container_name: lazy-balancer
     network_mode: host          <span class="c"># Caddy 直接监听宿主 80/443</span>
     volumes:
@@ -363,7 +363,7 @@ footer { border-top: 1px solid rgba(255,255,255,0.06); padding: 34px 0 44px; }
   <pre><code>docker run -d --name lazy-balancer --network host --restart unless-stopped \
   -v lb-data:/app/data -v ./logs:/app/logs -v ./certs:/app/certs \
   -v ./waf:/app/waf -v ./backup:/app/backup \
-  v55448330/lazy-balancer-v2:v2.3.5</code></pre>
+  v55448330/lazy-balancer-v2:v2.3.6</code></pre>
   <div class="callout info"><b>端口说明。</b>80/443 是网站流量入口（Caddy），<b>8000 是管理面板</b>（浏览器访问 <code>https://&lt;服务器IP&gt;:8000</code>）。面板默认强制 HTTPS，首次访问接受一下自签证书即可。</div>
   <div class="callout info"><b>想要从节点（高可用）？</b>同样的镜像再起一个实例，面板里切换到「从节点」并指向主节点地址（如 <code>http://主节点IP:8000</code>）即可，详见第 6 章。</div>
 
@@ -627,11 +627,18 @@ footer { border-top: 1px solid rgba(255,255,255,0.06); padding: 34px 0 44px; }
   <h2><span class="ch">10</span>更新日志</h2>
   <p class="sec-sub">每个版本改了什么、为什么值得升级——最新的在最前面。</p>
 
-  <h3>v2.3.6-beta（测试版）</h3>
-  <p>主题：NTLM 认证后端支持。</p>
+  <h3>v2.3.6（稳定版）</h3>
+  <p>主题：NTLM 认证后端支持、证书签发更快更稳、安全策略批量绑定一次保存、大量稳定性加固。</p>
   <ul>
     <li><b>新增</b>：规则支持 NTLM 认证后端（如 Exchange、旧版 IIS）——一键锁定长连接亲和代理形态。</li>
-    <li><b>升级提示</b>：数据库新增两列，重启容器自动迁移；建议主从同时升级。</li>
+    <li><b>新增</b>：安全策略批量绑定——关联大量规则时一次保存完成（此前逐条提交，规则越多越慢）。</li>
+    <li><b>优化</b>：证书签发的 DNS 传播判定升级——多个公共 DNS 共识命中即放行，签发更快；每台 DNS 的探测结果在任务日志中逐台可见，排查更直观。</li>
+    <li><b>修复</b>：证书签发失败后改回手动证书，任务列表残留的失败任务在重新保存规则时自动清理；配置导入同样自动清理。</li>
+    <li><b>修复</b>：编辑 HTTP 规则开启 HTTPS 时，监听端口自动切换为 443（此前仅提示）。</li>
+    <li><b>修复</b>：任务监控页签发任务的失败次数现在准确累计。</li>
+    <li><b>优化</b>：绑定规则时同步校验「最多 8 条策略」与「限流策略唯一」，与单条绑定口径一致。</li>
+    <li><b>其他</b>：全项目审计加固——约 50 项稳定性、一致性与可观测性修复；保存链路新增分段计时日志便于定位慢保存。</li>
+    <li><b>升级提示</b>：数据库新增列自动迁移；建议主从同时升级。</li>
   </ul>
 
   <h3>v2.3.5（稳定版）</h3>
