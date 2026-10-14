@@ -624,23 +624,47 @@ footer { border-top: 1px solid rgba(255,255,255,0.06); padding: 34px 0 44px; }
   </ul>
 
   <h3>9.5 Linux 系统优化（可选）</h3>
-  <p>默认配置即可稳定运行；高并发（数千 rps 以上）或长连接较多时，建议在宿主机按需调整：</p>
-  <pre><code># /etc/sysctl.conf —— 高并发连接
-sysctl -w net.core.somaxconn=65535        # 监听队列（默认 128，高并发握手排队）
-sysctl -w net.ipv4.tcp_max_syn_backlog=65535
-sysctl -w net.core.netdev_max_backlog=65535
-sysctl -w net.ipv4.ip_local_port_range=1024 65535   # 上游连接源端口
+  <p>默认配置即可稳定运行；高并发（数千 rps 以上）或长连接较多时，按你的发行版选一套。两套内核参数相同，差别在文件描述符的生效通道（Ubuntu 的 Docker 由 systemd 管理，CentOS/RHEL 的 containerd 需显式覆盖）。</p>
 
-# TIME_WAIT 快速回收与复用（作为反代大量短连接时）
-sysctl -w net.ipv4.tcp_tw_reuse=1
+  <h4>Ubuntu 22.04 及以后（Docker）</h4>
+  <pre><code># 1) 内核参数 —— 写入 /etc/sysctl.d/99-lazy-balancer.conf
+sudo tee /etc/sysctl.d/99-lazy-balancer.conf &lt;&lt;'EOF'
+net.core.somaxconn = 65535
+net.ipv4.tcp_max_syn_backlog = 65535
+net.core.netdev_max_backlog = 65535
+net.ipv4.ip_local_port_range = 1024 65535
+net.ipv4.tcp_tw_reuse = 1
+EOF
+sudo sysctl --system
 
-# 文件描述符（容器继承宿主 limit）
-echo "* soft nofile 1048576" >> /etc/security/limits.conf
-echo "* hard nofile 1048576" >> /etc/security/limits.conf
+# 2) 文件描述符 —— Ubuntu 的 Docker 由 systemd 管理，不走 limits.conf；
+#    22.04+ 默认已很高（约 10 亿），确认即可：
+cat /proc/$(pidof dockerd)/limits | grep "open files"
+# 若数值偏低，显式覆盖：
+sudo mkdir -p /etc/systemd/system/docker.service.d
+printf '[Service]\nLimitNOFILE=1048576\n' | sudo tee /etc/systemd/system/docker.service.d/override.conf
+sudo systemctl daemon-reload &amp;&amp; sudo systemctl restart docker</code></pre>
 
-# 使配置生效
-sysctl -p</code></pre>
-  <div class="callout info"><b>说明</b>：以上参数只影响承载上限，不影响安全性；docker-compose 部署时 ulimit 由 Docker 守护进程继承宿主机设置。如已够用（千级 rps 以下），完全不需要调整。</div>
+  <h4>CentOS / RHEL / Rocky 8 及以后（Docker 或 containerd）</h4>
+  <pre><code># 1) 内核参数 —— 同上写入 /etc/sysctl.d/99-lazy-balancer.conf 并 sysctl --system
+
+# 2) 文件描述符 —— systemd 服务的容器不经 PAM/limits.conf：
+#    Docker：
+sudo mkdir -p /etc/systemd/system/docker.service.d
+printf '[Service]\nLimitNOFILE=1048576\n' | sudo tee /etc/systemd/system/docker.service.d/override.conf
+#    containerd（k8s 环境）：
+sudo mkdir -p /etc/systemd/system/containerd.service.d
+printf '[Service]\nLimitNOFILE=1048576\n' | sudo tee /etc/systemd/system/containerd.service.d/override.conf
+sudo systemctl daemon-reload &amp;&amp; sudo systemctl restart docker containerd
+
+# 3) CentOS 特有 —— firewalld 与 Docker 网络的已知冲突（重启后容器断网）：
+#    若使用 firewalld，保持 docker-ce 为最新（自带 iptables 规则修复），
+#    或将 docker0 加入信任区：firewall-cmd --permanent --zone=trusted --add-interface=docker0
+
+# 4) SELinux —— 默认 Enforcing；容器无需特例。若自行挂载非标准路径遇到
+#    权限拒绝，优先用 :z 卷标签而非关闭 SELinux：-v /path:/app/data:z</code></pre>
+
+  <div class="callout info"><b>说明</b>：内核参数两套完全一致，只影响承载上限不影响安全性。<b>不要使用 <code>tcp_tw_recycle</code></b>（内核 4.12 已移除，NAT 环境会导致连接错乱）；Ubuntu 与 CentOS 的 Docker/containerd 文件描述符都由 systemd 管理，<code>/etc/security/limits.conf</code> 只对登录会话生效。千级 rps 以下无需任何调整。</div>
 
   <h3>9.6 常见问题</h3>
   <div class="faq-item"><summary>忘记管理员密码怎么办？</summary><div class="faq-body">在数据库里重置：进入容器 <code>docker exec -it lazy-balancer sh</code>，用 sqlite3 把 users 表管理员行删除（<code>DELETE FROM users WHERE username='admin';</code>）后重启容器，面板会重新走「首次创建管理员」流程。操作前请先备份数据卷。</div></div>
