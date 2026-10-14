@@ -614,7 +614,35 @@ footer { border-top: 1px solid rgba(255,255,255,0.06); padding: 34px 0 44px; }
   <h3>9.3 日志在哪</h3>
   <p>容器内 <code>/app/logs</code>（映射到宿主 <code>./logs</code>）：应用运行、Caddy 访问与运行、WAF 审计、证书任务、规则库更新、集群同步——每类都有大小轮转，面板内也能直接查看大部分日志。</p>
 
-  <h3>9.4 常见问题</h3>
+  <h3>9.4 容量与性能建议</h3>
+  <ul>
+    <li><b>CPU</b>：转发本身很轻（单核可承载数千请求/秒），真正的开销在 WAF——全量 OWASP 规则检查每个请求约 0.1-1 毫秒 CPU。经验公式：<b>建议核数 ≈ 2 +（经过全量 WAF 检查的每秒请求数 ÷ 2000）</b>。例如 5000 rps 全量过 WAF 给 4-5 核；先用限流/黑名单把恶意流量挡在 WAF 之前，2-3 核就够。</li>
+    <li><b>省钱技巧</b>：把便宜的安全层放在前面——信任名单零开销直通、IP 黑名单和限流在 WAF 之前生效（阶段流水线设计）；只跑自定义规则（不启用 CRS）时 WAF 开销降一两个量级。</li>
+    <li><b>内存</b>：1GB 起步即可；规则库/威胁库全装约 500MB 常驻，建议 2GB 留有余量。</li>
+    <li><b>磁盘</b>：WAF 审计事件默认保留 90 天、上限 100 万行自动清理，无需手动维护。</li>
+    <li><b>攻击期间</b>：事件入库采用批量写入，风暴时面板事件显示会延迟但不丢数据，也不抢请求处理的 CPU。</li>
+  </ul>
+
+  <h3>9.5 Linux 系统优化（可选）</h3>
+  <p>默认配置即可稳定运行；高并发（数千 rps 以上）或长连接较多时，建议在宿主机按需调整：</p>
+  <pre><code># /etc/sysctl.conf —— 高并发连接
+sysctl -w net.core.somaxconn=65535        # 监听队列（默认 128，高并发握手排队）
+sysctl -w net.ipv4.tcp_max_syn_backlog=65535
+sysctl -w net.core.netdev_max_backlog=65535
+sysctl -w net.ipv4.ip_local_port_range=1024 65535   # 上游连接源端口
+
+# TIME_WAIT 快速回收与复用（作为反代大量短连接时）
+sysctl -w net.ipv4.tcp_tw_reuse=1
+
+# 文件描述符（容器继承宿主 limit）
+echo "* soft nofile 1048576" >> /etc/security/limits.conf
+echo "* hard nofile 1048576" >> /etc/security/limits.conf
+
+# 使配置生效
+sysctl -p</code></pre>
+  <div class="callout info"><b>说明</b>：以上参数只影响承载上限，不影响安全性；docker-compose 部署时 ulimit 由 Docker 守护进程继承宿主机设置。如已够用（千级 rps 以下），完全不需要调整。</div>
+
+  <h3>9.6 常见问题</h3>
   <div class="faq-item"><summary>忘记管理员密码怎么办？</summary><div class="faq-body">在数据库里重置：进入容器 <code>docker exec -it lazy-balancer sh</code>，用 sqlite3 把 users 表管理员行删除（<code>DELETE FROM users WHERE username='admin';</code>）后重启容器，面板会重新走「首次创建管理员」流程。操作前请先备份数据卷。</div></div>
   <div class="faq-item"><summary>规则库卡片亮红「缺失/未安装」？</summary><div class="faq-body">说明规则文件缺失或损坏，安全链已按设计整体停渲染（不是误报）。到对应更新弹框点「立即更新」重新下载；持续失败看更新日志里的具体原因（通常是网络——配好 GitHub 加速代理）。</div></div>
   <div class="faq-item"><summary>自动更新失败会怎样？</summary><div class="faq-body">已安装的版本继续服役（防护不受影响），任务按 1h→2h→4h→8h→24h 退避重试，连续失败会在卡片与操作日志可见。网络恢复后自动回到排程节奏。</div></div>
