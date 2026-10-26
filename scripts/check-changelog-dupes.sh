@@ -83,7 +83,7 @@ canonicalize_subject() {
 # （隔离全局状态）。事故形态必须红、通过形态必须绿——只验「绿」的门禁无法
 # 证明它仍能拦住回归。
 self_test() {
-  local work out rc=0
+  local work out rc=0 boundary_69 boundary_70
   work="$(mktemp -d "${TMPDIR:-/tmp}/changelog-dupes-selftest.XXXXXX")"
   # shellcheck disable=SC2064
   trap "rm -rf '${work}'" EXIT
@@ -177,7 +177,16 @@ EOF
 EOF
   run_case "over-length entry is rejected" 1 '<70 字' "${work}/too-long.html"
 
-  # G) 前缀相同但不失败：提示必须出现，退出码仍为 0（人审定位，不误伤）。
+  # G) 精确长度边界：类型前缀计入正文，69 字必须绿，70 字必须红。
+  # run_case 同时断言退出码与门禁输出的实际字数，防止夹具长度或判定口径漂移。
+  boundary_69="优化：$(printf '界%.0s' {1..66})"
+  boundary_70="${boundary_69}界"
+  printf '<h3>v9.9.9</h3>\n<ul>\n<li>%s</li>\n</ul>\n' "${boundary_69}" >"${work}/exactly-69.html"
+  printf '<h3>v9.9.9</h3>\n<ul>\n<li>%s</li>\n</ul>\n' "${boundary_70}" >"${work}/exactly-70.html"
+  run_case "69-character entry passes" 0 '第 3 行，69 字' "${work}/exactly-69.html"
+  run_case "70-character entry is rejected" 1 '第 3 行，70 字' "${work}/exactly-70.html"
+
+  # H) 前缀相同但不失败：提示必须出现，退出码仍为 0（人审定位，不误伤）。
   cat >"${work}/prefix-hint.html" <<'EOF'
 <h3>v9.9.9</h3>
 <ul>
@@ -187,7 +196,7 @@ EOF
 EOF
   run_case "shared prefix only hints" 0 '前缀' "${work}/prefix-hint.html"
 
-  # H) 干净段：条目清单必须打印（交付报告依赖该输出）。
+  # I) 干净段：条目清单必须打印（交付报告依赖该输出）。
   cat >"${work}/clean.html" <<'EOF'
 <h3>v9.9.9</h3>
 <ul>
