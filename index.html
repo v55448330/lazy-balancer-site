@@ -483,6 +483,7 @@ var _hmt = _hmt || [];
       <div><span class="t-c"># 一行命令，启动完整平台(host 网络 + 自启 + 数据持久化）</span></div>
       <div><span class="t-p">$</span> <span class="t-w">docker run -d --name lazy-balancer \</span></div>
       <div>&nbsp;&nbsp;<span class="t-w">--network host --restart unless-stopped \</span></div>
+      <div>&nbsp;&nbsp;<span class="t-w">--pids-limit=4096 \</span></div>
       <div>&nbsp;&nbsp;<span class="t-w">-v lb-data:/app/data -v lb-certs:/app/certs \</span></div>
       <div>&nbsp;&nbsp;<span class="t-w">-v lb-logs:/app/logs -v lb-waf:/app/waf \</span></div>
       <div>&nbsp;&nbsp;<span class="t-w">-v lb-backup:/app/backup \</span></div>
