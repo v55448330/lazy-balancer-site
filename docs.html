@@ -347,7 +347,7 @@ footer { border-top: 1px solid rgba(255,255,255,0.06); padding: 34px 0 44px; }
   <p>只需要 Docker。把下面内容存为 <code>docker-compose.yml</code>，然后 <code>docker compose up -d</code> 就完成了——镜像里已包含全部组件（Caddy、管理面板、WAF 规则库、IP 地理库）。</p>
   <pre><code><span class="k">services:</span>
   lazy-balancer:
-    image: v55448330/lazy-balancer-v2:v2.3.6
+    image: v55448330/lazy-balancer-v2:v2.3.8
     container_name: lazy-balancer
     network_mode: host          <span class="c"># Caddy 直接监听宿主 80/443</span>
     volumes:
@@ -363,8 +363,9 @@ footer { border-top: 1px solid rgba(255,255,255,0.06); padding: 34px 0 44px; }
   <pre><code>docker run -d --name lazy-balancer --network host --restart unless-stopped \
   -v lb-data:/app/data -v ./logs:/app/logs -v ./certs:/app/certs \
   -v ./waf:/app/waf -v ./backup:/app/backup \
-  v55448330/lazy-balancer-v2:v2.3.6</code></pre>
+  v55448330/lazy-balancer-v2:v2.3.8</code></pre>
   <div class="callout info"><b>端口说明。</b>80/443 是网站流量入口（Caddy），<b>8000 是管理面板</b>（浏览器访问 <code>https://&lt;服务器IP&gt;:8000</code>）。面板默认强制 HTTPS，首次访问接受一下自签证书即可。</div>
+  <div class="callout info"><b>旧镜像升级提示。</b>v2.3.8 起的镜像已内置 init 进程与零子进程健康检查，无需额外参数。若你固定使用更早的镜像，请在启动命令中追加 <code>--init</code>；高连接量部署建议同时加 <code>--pids-limit=4096</code>。</div>
   <div class="callout info"><b>想要从节点（高可用）？</b>同样的镜像再起一个实例，面板里切换到「从节点」并指向主节点地址（如 <code>http://主节点IP:8000</code>）即可，详见第 6 章。</div>
 
   <h3>1.3 首次登录</h3>
@@ -756,6 +757,7 @@ systemctl restart containerd</code></pre>
     <li>修复：禁用用户后再启用，禁用前签发的登录会话与 MFA 验证挑战立即失效，需重新登录。</li>
     <li>修复：旧标签页迟到的登录失效响应不再把当前已重新登录的会话一并踢出。</li>
     <li>修复：补强证书规则库替换与证书任务排空的失败回滚——异常时保留旧材料与队列归属，不再出现安全规则整体失效或误伤新签发任务。</li>
+    <li>修复：容器健康检查不再产生残留子进程，镜像内置 init 自动回收孤儿进程，长期运行不再耗尽系统进程配额。</li>
   </ul>
   <p class="callout info"><b>升级提示</b>：数据库自动迁移安全事件保留、流量采样与初始管理员标记；无需手动处理。</p>
 
