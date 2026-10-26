@@ -10,7 +10,7 @@
 #      ——上一版已存在的能力只能写优化/修复。反方向（优化/修复 主语必须在上一版
 #      出现过）不可机器判定：修复/优化常针对上一版日志未提及的细节，强行要求会
 #      产生假失败，故不检查。
-#   4) 长度：条目可见正文（类型前缀＋描述，去 HTML 标签、去空白）≤40 字符——
+#   4) 长度：条目可见正文（类型前缀＋描述，去 HTML 标签、去空白）<70 字符——
 #      写作规范要求「一句话一个事实、无解释性从句」，细节留给文档站。超限条目
 #      逐行打印行号与字数，任一超限退出码 1。长度门只约束被测版本段（即发布前
 #      正在写的这一段）；历史段落按当时口径保留，不回改、不参与判定。
@@ -168,14 +168,14 @@ EOF
 EOF
   run_case "cross-version add conflicts" 1 '已出现在 v9.9.8' "${work}/cross-version.html"
 
-  # F) 单条长度上限（41 字起）。
+  # F) 单条长度上限（≥70 字必须拒绝）。
   cat >"${work}/too-long.html" <<'EOF'
 <h3>v9.9.9</h3>
 <ul>
-<li>优化：这一条日志写得太长了超过了四十个字符的上限需要拆开说明具体细节才符合写作规范要求。</li>
+<li>优化：这一条日志写得太长了已经超过七十个字符的上限需要拆开说明具体细节才符合写作规范要求并且还要继续拉长以确保触发长度门禁同时保留足够多的解释性从句来测试边界行为。</li>
 </ul>
 EOF
-  run_case "over-length entry is rejected" 1 '超过 40 字' "${work}/too-long.html"
+  run_case "over-length entry is rejected" 1 '<70 字' "${work}/too-long.html"
 
   # G) 前缀相同但不失败：提示必须出现，退出码仍为 0（人审定位，不误伤）。
   cat >"${work}/prefix-hint.html" <<'EOF'
@@ -381,14 +381,14 @@ while IFS=$'\t' read -r canon_a line_a _typ_a _subject_a; do
   done <"${norm_file}"
 done <"${norm_file}"
 
-# —— 单条长度：≤40 字符 ——
+# —— 单条长度：<70 字符（用户裁定）——
 # 口径：条目可见正文（类型前缀＋描述，去 HTML 标签、去空白）的 UTF-8 字符数。
 # 计数与 locale 无关（BSD awk 的 length() 数的是字节）：去掉全部续接字节
 # （0x80-0xBF）后的字节数即字符数。
 char_count() {
   printf '%s' "$1" | LC_ALL=C tr -d '\200-\277' | LC_ALL=C wc -c | tr -d ' '
 }
-max_chars=40
+max_chars=69
 over_report=""
 while IFS=$'\t' read -r _ver _typ _subject lineno text; do
   [[ -n "${text}" ]] || continue
@@ -398,7 +398,7 @@ while IFS=$'\t' read -r _ver _typ _subject lineno text; do
   fi
 done <"${section_file}"
 if [[ -n "${over_report}" ]]; then
-  echo "ERROR: ${version} 段有条目超过 ${max_chars} 字——一句话一个事实，解释性从句移入文档站；能力子项用「；」并入父条目：" >&2
+  echo "ERROR: ${version} 段有条目超过 <70 字（上限 69 字）——一句话一个事实，解释性从句移入文档站；能力子项用「；」并入父条目：" >&2
   printf '%s' "${over_report}" >&2
   fail=1
 fi
