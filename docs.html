@@ -285,7 +285,7 @@ footer { border-top: 1px solid rgba(255,255,255,0.06); padding: 34px 0 44px; }
   <div class="wrap">
     <div class="kicker">USER MANUAL</div>
     <h1>用户手册 — <em>照着做就能用起来</em></h1>
-    <p>从部署到上线的完整指南：先跑起来，再发第一条规则，然后逐步打开安全防护、证书、集群与自动化。每一节都按「是什么 → 在哪进 → 怎么用 → 注意点」组织，对应面板版本 v2.3.8。</p>
+    <p>从部署到上线的完整指南：先跑起来，再发第一条规则，然后逐步打开安全防护、证书、集群与自动化。每一节都按「是什么 → 在哪进 → 怎么用 → 注意点」组织，对应面板版本：稳定版 v2.3.8 / 测试版 v2.3.9-beta。</p>
   </div>
 </header>
 
@@ -367,6 +367,7 @@ footer { border-top: 1px solid rgba(255,255,255,0.06); padding: 34px 0 44px; }
   -v ./waf:/app/waf -v ./backup:/app/backup \
   v55448330/lazy-balancer-v2:v2.3.8</code></pre>
   <div class="callout info"><b>端口说明。</b>80/443 是网站流量入口（Caddy），<b>8000 是管理面板</b>（浏览器访问 <code>https://&lt;服务器IP&gt;:8000</code>）。面板默认强制 HTTPS，首次访问接受一下自签证书即可。</div>
+  <div class="callout info"><b>测试通道。</b>想尝鲜可用 <code>v55448330/lazy-balancer-v2:v2.3.9-beta</code>（进程配额卡片等）；稳定部署继续使用上方 v2.3.8。</div>
   <div class="callout info"><b>旧镜像升级提示。</b>v2.3.8 起的镜像已内置 init 进程与零子进程健康检查，无需额外参数；示例已默认 <code>--pids-limit=4096</code>（PID 配额按线程计数），可按部署规模调整。若固定使用更早的镜像，请在启动命令中追加 <code>--init</code>。</div>
   <div class="callout info"><b>想要从节点（高可用）？</b>同样的镜像再起一个实例，面板里切换到「从节点」并指向主节点地址（如 <code>http://主节点IP:8000</code>）即可，详见第 6 章。</div>
 

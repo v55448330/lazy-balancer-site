@@ -122,6 +122,10 @@ nav {
   animation: fadeUp 0.8s ease both;
 }
 .hero-badge .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 10px var(--green); animation: pulse 2s infinite; }
+.hero-badges { display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 30px; animation: fadeUp 0.8s ease both; }
+.hero-badges .hero-badge { margin-bottom: 0; }
+.hero-badge--beta { border-color: rgba(139, 92, 246, 0.32); background: rgba(139, 92, 246, 0.08); color: #b9a7ff; }
+.hero-badge--beta .dot { background: var(--violet); box-shadow: 0 0 10px var(--violet); }
 @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
 h1.hero-title { font-size: clamp(44px, 7.2vw, 84px); font-weight: 800; letter-spacing: -1.5px; line-height: 1.08; animation: fadeUp 0.8s 0.1s ease both; }
 h1 .grad { background: var(--grad); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
@@ -461,7 +465,10 @@ var _hmt = _hmt || [];
 </nav>
 
 <header class="hero wrap" id="top">
-  <div class="hero-badge"><span class="dot"></span>稳定版 v2.3.8（威胁大屏与任务引擎） · 双平台镜像 linux/amd64 · linux/arm64</div>
+  <div class="hero-badges">
+    <div class="hero-badge"><span class="dot"></span>稳定版 v2.3.8（威胁大屏与任务引擎） · amd64/arm64</div>
+    <div class="hero-badge hero-badge--beta"><span class="dot"></span>测试版 v2.3.9-beta（进程配额监控）</div>
+  </div>
   <h1 class="hero-title">负载均衡，本应如此<br><span class="grad">简单而强大</span></h1>
   <p class="hero-sub">
     基于 <b>Caddy</b> 的可视化负载均衡管理平台——<b>WAF 四态防护</b>（OWASP CRS + 地域拦截 + 多来源威胁情报库）、
