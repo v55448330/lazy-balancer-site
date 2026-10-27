@@ -357,18 +357,23 @@ footer { border-top: 1px solid rgba(255,255,255,0.06); padding: 34px 0 44px; }
       - ./waf:/app/waf          <span class="c"># WAF 规则库与 IP 库</span>
       - ./backup:/app/backup    <span class="c"># 自动备份落盘</span>
     restart: unless-stopped   <span class="c"># 时区无需环境变量——面板「基础设置 → 时区」统一控制</span>
-    pids_limit: 4096          <span class="c"># PID 配额（含线程），高连接量部署留足余量</span>
+    pids_limit: 4096          <span class="c"># cgroup PID 配额（含线程），高连接量部署留足余量</span>
+    ulimits:                  <span class="c"># 容器内 RLIMIT_NPROC；与 pids_limit 取较低值</span>
+      nproc:
+        soft: 4096
+        hard: 4096
 <span class="k">volumes:</span>
   lb-data:</code></pre>
   <p>不用 compose 的话，一条 <code>docker run</code> 等价：</p>
   <pre><code>docker run -d --name lazy-balancer --network host --restart unless-stopped \
   --pids-limit=4096 \
+  --ulimit nproc=4096:4096 \
   -v lb-data:/app/data -v ./logs:/app/logs -v ./certs:/app/certs \
   -v ./waf:/app/waf -v ./backup:/app/backup \
   v55448330/lazy-balancer-v2:v2.3.8</code></pre>
   <div class="callout info"><b>端口说明。</b>80/443 是网站流量入口（Caddy），<b>8000 是管理面板</b>（浏览器访问 <code>https://&lt;服务器IP&gt;:8000</code>）。面板默认强制 HTTPS，首次访问接受一下自签证书即可。</div>
   <div class="callout info"><b>测试通道。</b>想尝鲜可用 <code>v55448330/lazy-balancer-v2:v2.3.9-beta</code>（进程配额卡片等）；稳定部署继续使用上方 v2.3.8。</div>
-  <div class="callout info"><b>旧镜像升级提示。</b>v2.3.8 起的镜像已内置 init 进程与零子进程健康检查，无需额外参数；示例已默认 <code>--pids-limit=4096</code>（PID 配额按线程计数），可按部署规模调整。若固定使用更早的镜像，请在启动命令中追加 <code>--init</code>。</div>
+  <div class="callout info"><b>旧镜像升级提示。</b>v2.3.8 起的镜像已内置 init 进程与零子进程健康检查，无需额外参数；示例已默认 <code>--pids-limit=4096</code>（cgroup PID 配额，按线程计数）并同时设置 <code>--ulimit nproc=4096:4096</code>（容器内 RLIMIT_NPROC）；两者只作用于容器，宿主系统 ulimit 无需修改。若固定使用更早的镜像，请在启动命令中追加 <code>--init</code>。</div>
   <div class="callout info"><b>想要从节点（高可用）？</b>同样的镜像再起一个实例，面板里切换到「从节点」并指向主节点地址（如 <code>http://主节点IP:8000</code>）即可，详见第 6 章。</div>
 
   <h3>1.3 首次登录</h3>
