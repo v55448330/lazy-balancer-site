@@ -372,7 +372,7 @@ footer { border-top: 1px solid rgba(255,255,255,0.06); padding: 34px 0 44px; }
   -v ./waf:/app/waf -v ./backup:/app/backup \
   v55448330/lazy-balancer-v2:v2.3.8</code></pre>
   <div class="callout info"><b>端口说明。</b>80/443 是网站流量入口（Caddy），<b>8000 是管理面板</b>（浏览器访问 <code>https://&lt;服务器IP&gt;:8000</code>）。面板默认强制 HTTPS，首次访问接受一下自签证书即可。</div>
-  <div class="callout info"><b>测试通道。</b>想尝鲜可用 <code>v55448330/lazy-balancer-v2:v2.3.9-beta</code>（进程配额卡片等）；稳定部署继续使用上方 v2.3.8。</div>
+  <div class="callout info"><b>测试通道。</b>想尝鲜可用 <code>v55448330/lazy-balancer-v2:v2.3.9-beta</code>（安全事件采集架构优化等）；稳定部署继续使用上方 v2.3.8。</div>
   <div class="callout info"><b>旧镜像升级提示。</b>v2.3.8 起的镜像已内置 init 进程与零子进程健康检查，无需额外参数；示例已默认 <code>--pids-limit=4096</code>（cgroup PID 配额，按线程计数）并同时设置 <code>--ulimit nproc=4096:4096</code>（容器内 RLIMIT_NPROC）；两者只作用于容器，宿主系统 ulimit 无需修改。若固定使用更早的镜像，请在启动命令中追加 <code>--init</code>。</div>
   <div class="callout info"><b>想要从节点（高可用）？</b>同样的镜像再起一个实例，面板里切换到「从节点」并指向主节点地址（如 <code>http://主节点IP:8000</code>）即可，详见第 6 章。</div>
 
