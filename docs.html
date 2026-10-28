@@ -372,7 +372,7 @@ footer { border-top: 1px solid rgba(255,255,255,0.06); padding: 34px 0 44px; }
   -v ./waf:/app/waf -v ./backup:/app/backup \
   v55448330/lazy-balancer-v2:v2.3.8</code></pre>
   <div class="callout info"><b>端口说明。</b>80/443 是网站流量入口（Caddy），<b>8000 是管理面板</b>（浏览器访问 <code>https://&lt;服务器IP&gt;:8000</code>）。面板默认强制 HTTPS，首次访问接受一下自签证书即可。</div>
-  <div class="callout info"><b>测试通道。</b>想尝鲜可用 <code>v55448330/lazy-balancer-v2:v2.3.9-beta</code>（安全事件采集架构优化等）；稳定部署继续使用上方 v2.3.8。</div>
+  <div class="callout info"><b>测试通道。</b>想尝鲜可用 <code>v55448330/lazy-balancer-v2:v2.3.9-beta</code>（安全事件采集与界面风格优化）；稳定部署继续使用上方 v2.3.8。</div>
   <div class="callout info"><b>旧镜像升级提示。</b>v2.3.8 起的镜像已内置 init 进程与零子进程健康检查，无需额外参数；示例已默认 <code>--pids-limit=4096</code>（cgroup PID 配额，按线程计数）并同时设置 <code>--ulimit nproc=4096:4096</code>（容器内 RLIMIT_NPROC）；两者只作用于容器，宿主系统 ulimit 无需修改。若固定使用更早的镜像，请在启动命令中追加 <code>--init</code>。</div>
   <div class="callout info"><b>想要从节点（高可用）？</b>同样的镜像再起一个实例，面板里切换到「从节点」并指向主节点地址（如 <code>http://主节点IP:8000</code>）即可，详见第 6 章。</div>
 
@@ -745,7 +745,7 @@ systemctl restart containerd</code></pre>
   <p class="sec-sub">每个版本改了什么、为什么值得升级——最新的在最前面。</p>
 
   <h3>v2.3.9-beta（测试版）</h3>
-  <p>主题：重构安全事件采集链路、进程配额可视化、自定义规则与稳定性。</p>
+  <p>主题：安全事件采集、进程配额、自定义规则、界面风格与稳定性。</p>
   <ul>
     <li>优化：重构安全事件采集链路，正常事件不再写入全量审计文件，异常条目进入缓存自动补采。</li>
     <li>优化：事件日志展示缓存条目并按数据库容量统计；旧审计日志只由采集链路处理。</li>
@@ -758,7 +758,8 @@ systemctl restart containerd</code></pre>
     <li>修复：认证重放、API Key 明文、导入校验与清理误删等安全边界。</li>
     <li>修复：任务触发、配置保存、列表刷新与 Caddy 启停的并发一致性。</li>
     <li>修复：任务监控卡片、筛选与操作列的布局细节统一。</li>
-    <li>优化：IP 快捷处置弹框重构，展示真实封禁状态与规则摘要，快捷加入黑白名单/信任并支持自动封禁解除。</li>
+    <li>优化：IP 快捷弹框改为四类名单管理，支持黑白/信任名单增删与自动封禁解除。</li>
+    <li>优化：统一全站页面与弹框风格，分区、面板、按钮、标签、输入框与开关采用统一布局和直角设计。</li>
     <li>修复：同步间隔清空、管理面板证书暂存与 Caddy 错误脱敏等稳定性问题。</li>
   </ul>
   <p class="callout info"><b>升级提示</b>：数据库自动迁移自定义规则条件关系列（旧规则默认「同时满足」）；容器建议重建以应用新的健康检查与 init 进程。安全事件采集升级后会消费旧版审计日志存量；成功事件以 metrics 数据库为权威，升级前请备份数据卷。</p>
