@@ -285,7 +285,7 @@ footer { border-top: 1px solid rgba(255,255,255,0.06); padding: 34px 0 44px; }
   <div class="wrap">
     <div class="kicker">USER MANUAL</div>
     <h1>用户手册 — <em>照着做就能用起来</em></h1>
-    <p>从部署到上线的完整指南：先跑起来，再发第一条规则，然后逐步打开安全防护、证书、集群与自动化。每一节都按「是什么 → 在哪进 → 怎么用 → 注意点」组织，对应面板版本：稳定版 v2.3.8 / 测试版 v2.3.9-beta。</p>
+    <p>从部署到上线的完整指南：先跑起来，再发第一条规则，然后逐步打开安全防护、证书、集群与自动化。每一节都按「是什么 → 在哪进 → 怎么用 → 注意点」组织，对应面板版本：稳定版 v2.3.9。</p>
   </div>
 </header>
 
@@ -347,7 +347,7 @@ footer { border-top: 1px solid rgba(255,255,255,0.06); padding: 34px 0 44px; }
   <p>只需要 Docker。把下面内容存为 <code>docker-compose.yml</code>，然后 <code>docker compose up -d</code> 就完成了——镜像里已包含全部组件（Caddy、管理面板、WAF 规则库、IP 地理库）。</p>
   <pre><code><span class="k">services:</span>
   lazy-balancer:
-    image: v55448330/lazy-balancer-v2:v2.3.8
+    image: v55448330/lazy-balancer-v2:v2.3.9
     container_name: lazy-balancer
     network_mode: host          <span class="c"># Caddy 直接监听宿主 80/443</span>
     volumes:
@@ -370,9 +370,8 @@ footer { border-top: 1px solid rgba(255,255,255,0.06); padding: 34px 0 44px; }
   --ulimit nproc=4096:4096 \
   -v lb-data:/app/data -v ./logs:/app/logs -v ./certs:/app/certs \
   -v ./waf:/app/waf -v ./backup:/app/backup \
-  v55448330/lazy-balancer-v2:v2.3.8</code></pre>
+  v55448330/lazy-balancer-v2:v2.3.9</code></pre>
   <div class="callout info"><b>端口说明。</b>80/443 是网站流量入口（Caddy），<b>8000 是管理面板</b>（浏览器访问 <code>https://&lt;服务器IP&gt;:8000</code>）。面板默认强制 HTTPS，首次访问接受一下自签证书即可。</div>
-  <div class="callout info"><b>测试通道。</b>想尝鲜可用 <code>v55448330/lazy-balancer-v2:v2.3.9-beta</code>（安全事件采集与界面风格优化）；稳定部署继续使用上方 v2.3.8。</div>
   <div class="callout info"><b>旧镜像升级提示。</b>v2.3.8 起的镜像已内置 init 进程与零子进程健康检查，无需额外参数；示例已默认 <code>--pids-limit=4096</code>（cgroup PID 配额，按线程计数）并同时设置 <code>--ulimit nproc=4096:4096</code>（容器内 RLIMIT_NPROC）；两者只作用于容器，宿主系统 ulimit 无需修改。若固定使用更早的镜像，请在启动命令中追加 <code>--init</code>。</div>
   <div class="callout info"><b>想要从节点（高可用）？</b>同样的镜像再起一个实例，面板里切换到「从节点」并指向主节点地址（如 <code>http://主节点IP:8000</code>）即可，详见第 6 章。</div>
 
@@ -744,8 +743,8 @@ systemctl restart containerd</code></pre>
   <h2><span class="ch">10</span>更新日志</h2>
   <p class="sec-sub">每个版本改了什么、为什么值得升级——最新的在最前面。</p>
 
-  <h3>v2.3.9-beta（测试版）</h3>
-  <p>主题：安全事件采集、进程配额、自定义规则、界面风格与稳定性。</p>
+  <h3>v2.3.9（稳定版）</h3>
+  <p>主题：证书续签、任务引擎与安全事件采集（原 v2.3.9-beta 测试内容转正，并修复续签失败可见性、任务停止态持久化与自动封禁口径）。</p>
   <ul>
     <li>优化：重构安全事件采集链路，正常事件不再写入全量审计文件，异常条目进入缓存自动补采。</li>
     <li>优化：事件日志展示缓存条目并按数据库容量统计；旧审计日志只由采集链路处理。</li>
@@ -767,7 +766,7 @@ systemctl restart containerd</code></pre>
   </ul>
   <p class="callout info"><b>升级提示</b>：数据库自动迁移自定义规则条件关系列（旧规则默认「同时满足」）；容器建议重建以应用新的健康检查与 init 进程。安全事件采集升级后会消费旧版审计日志存量；成功事件以 metrics 数据库为权威，升级前请备份数据卷。</p>
 
-  <h3>v2.3.8（稳定版）</h3>
+  <h3>v2.3.8（已退役）</h3>
   <p>主题：威胁大屏、厂商爬虫豁免、爬虫地址库、任务引擎与安全事件保留。</p>
   <ul>
     <li>新增：威胁大屏——三栏版式，1h/24h/7d；2D 地图与 3D 地球双视图、国家下钻与省级视图、攻击光流、流量采样与指标集中呈现。</li>
