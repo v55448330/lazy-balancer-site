@@ -285,7 +285,7 @@ footer { border-top: 1px solid rgba(255,255,255,0.06); padding: 34px 0 44px; }
   <div class="wrap">
     <div class="kicker">USER MANUAL</div>
     <h1>用户手册 — <em>照着做就能用起来</em></h1>
-    <p>从部署到上线的完整指南：先跑起来，再发第一条规则，然后逐步打开安全防护、证书、集群与自动化。每一节都按「是什么 → 在哪进 → 怎么用 → 注意点」组织，对应面板版本：稳定版 v2.3.9。</p>
+    <p>从部署到上线的完整指南：先跑起来，再发第一条规则，然后逐步打开安全防护、证书、集群与自动化。每一节都按「是什么 → 在哪进 → 怎么用 → 注意点」组织，对应面板版本：稳定版 v2.3.9 / 测试版 v2.4.0-beta。</p>
   </div>
 </header>
 
@@ -373,6 +373,7 @@ footer { border-top: 1px solid rgba(255,255,255,0.06); padding: 34px 0 44px; }
   v55448330/lazy-balancer-v2:v2.3.9</code></pre>
   <div class="callout info"><b>端口说明。</b>80/443 是网站流量入口（Caddy），<b>8000 是管理面板</b>（浏览器访问 <code>https://&lt;服务器IP&gt;:8000</code>）。面板默认强制 HTTPS，首次访问接受一下自签证书即可。</div>
   <div class="callout info"><b>旧镜像升级提示。</b>v2.3.8 起的镜像已内置 init 进程与零子进程健康检查，无需额外参数；示例已默认 <code>--pids-limit=4096</code>（cgroup PID 配额，按线程计数）并同时设置 <code>--ulimit nproc=4096:4096</code>（容器内 RLIMIT_NPROC）；两者只作用于容器，宿主系统 ulimit 无需修改。若固定使用更早的镜像，请在启动命令中追加 <code>--init</code>。</div>
+  <div class="callout info"><b>测试通道。</b>想抢先体验新能力，可把镜像 tag 换成测试版 <code>v55448330/lazy-balancer-v2:v2.4.0-beta</code>（当前测试内容见第 10 章更新日志「v2.4.0-beta」）。测试版变动快，生产环境建议用上面的稳定版。</div>
   <div class="callout info"><b>想要从节点（高可用）？</b>同样的镜像再起一个实例，面板里切换到「从节点」并指向主节点地址（如 <code>http://主节点IP:8000</code>）即可，详见第 6 章。</div>
 
   <h3>1.3 首次登录</h3>
@@ -742,6 +743,17 @@ systemctl restart containerd</code></pre>
 <section id="changelog">
   <h2><span class="ch">10</span>更新日志</h2>
   <p class="sec-sub">每个版本改了什么、为什么值得升级——最新的在最前面。</p>
+
+  <h3>v2.4.0-beta（测试版）</h3>
+  <p>主题：TCP 规则安全策略、安全总览改版与阿里云 DNS 支持。</p>
+  <ul>
+    <li>新增：免费证书 DNS 验证支持阿里云 DNS，配置 RAM AccessKey 即可用于签发与自动续签。</li>
+    <li>新增：TCP 规则支持 IP 黑白名单、信任名单与 GeoIP 安全策略，拦截写入安全事件并接入威胁大屏。</li>
+    <li>优化：安全总览改版：KPI 统计卡与运行状态条合一，新增拦截/检测/正常请求指标，大数据量下打开提速约 80 倍。</li>
+    <li>优化：规则日志统计改为打开即统计最近 1000 行历史日志，无需等待新请求产生。</li>
+    <li>修复：规则页安全绑定弹框显示陈旧数据，现在打开时重新拉取并在切回标签页时自动刷新。</li>
+  </ul>
+  <p class="callout info"><b>升级提示</b>：安全总览升级后自动分轮回填预聚合数据，回填完成前总览按原方式直接查询；TCP 规则的安全策略需在「安全策略 → 关联规则」中绑定后生效。可从 v2.3.9 直接升级，无数据库手工迁移。</p>
 
   <h3>v2.3.9（稳定版）</h3>
   <p>主题：证书续签、任务引擎与安全事件采集（原 v2.3.9-beta 测试内容转正，并修复续签失败可见性、任务停止态持久化与自动封禁口径）。</p>
