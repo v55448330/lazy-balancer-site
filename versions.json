@@ -3,6 +3,17 @@
   "source": "https://www.lazybalancer.org/versions.json",
   "versions": [
     {
+      "version": "v9.9.9-beta",
+      "channel": "beta",
+      "channel_label": "测试版",
+      "theme": "版本提示功能验证（临时条目，稍后移除）",
+      "notes": [
+        "这是一条版本提示功能的验证条目",
+        "验证完成后将立即移除"
+      ],
+      "hints": []
+    },
+    {
       "version": "v2.4.0-beta",
       "channel": "retired",
       "channel_label": "测试版",
