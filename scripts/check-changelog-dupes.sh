@@ -38,7 +38,17 @@ set -euo pipefail
 
 self_path="$(cd "$(dirname "$0")" && pwd)/$(basename "$0")"
 cd "$(dirname "$0")/.."
-doc="${CHANGELOG_DOC:-docs.html}"
+doc="${CHANGELOG_DOC:-}"
+if [[ -z "$doc" ]]; then
+  # 更新日志唯一事实源=versions.json（docs.html 前端渲染源）；门禁消费其合成 HTML。
+  if [[ -f versions.json ]]; then
+    doc="$(mktemp "${TMPDIR:-/tmp}/changelog-doc.XXXXXX")"
+    python3 scripts/versions_to_doc.py versions.json > "$doc"
+    trap 'rm -f "$doc"' EXIT
+  else
+    doc="docs.html"
+  fi
+fi
 [[ -f "${doc}" ]] || { echo "ERROR: 缺少 ${doc}" >&2; exit 1; }
 
 # —— 能力词表：同一能力的别名/子视图 ——
