@@ -6,7 +6,7 @@
       "version": "v2.4.0",
       "channel_label": "稳定版",
       "date": "2026-11-02",
-      "theme": "TCP 规则安全策略、认证网关、IPv6 双栈与安全总览改版。",
+      "theme": "TCP 规则安全策略、认证网关、IPv6 双栈、阿里云 DNS 证书与安全总览改版。",
       "notes": [
         "新增：免费证书 DNS 验证支持阿里云 DNS，配置 RAM AccessKey 即可用于签发与自动续签。",
         "新增：TCP 规则支持 IP 黑白名单、信任名单与 GeoIP 安全策略，拦截写入安全事件。",
