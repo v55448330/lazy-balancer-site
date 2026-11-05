@@ -114,14 +114,18 @@ nav {
 /* ── Hero ── */
 .hero { padding: 172px 0 96px; text-align: center; position: relative; }
 .hero-badge {
-  display: inline-flex; align-items: center; gap: 8px;
+  display: inline-flex; align-items: center; gap: 10px;
   font-size: 13px; color: var(--cyan);
   border: 1px solid rgba(56, 225, 255, 0.25);
   background: rgba(56, 225, 255, 0.07);
-  padding: 6px 16px; border-radius: 999px; margin-bottom: 30px;
+  padding: 10px 22px; border-radius: 18px; margin-bottom: 30px;
   animation: fadeUp 0.8s ease both;
 }
-.hero-badge .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 10px var(--green); animation: pulse 2s infinite; }
+.hero-badge .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 10px var(--green); animation: pulse 2s infinite; flex: none; }
+.hero-badge-rows { display: flex; flex-direction: column; gap: 4px; text-align: left; }
+.hero-badge-row b.stable { color: var(--green); font-weight: 600; }
+.hero-badge-row b.beta { color: var(--amber, #e8b339); font-weight: 600; }
+.hero-badge-row.arch { opacity: 0.75; font-size: 12px; }
 @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
 h1.hero-title { font-size: clamp(44px, 7.2vw, 84px); font-weight: 800; letter-spacing: -1.5px; line-height: 1.08; animation: fadeUp 0.8s 0.1s ease both; }
 h1 .grad { background: var(--grad); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
@@ -461,7 +465,7 @@ var _hmt = _hmt || [];
 </nav>
 
 <header class="hero wrap" id="top">
-  <div class="hero-badge"><span class="dot"></span>稳定版 v2.4.1（拦截页按命中策略生效 · 绑定顺序可调 · 证书重签更自由 · IP 列表与 CRS 排除增强） · 测试版 v2.4.2-beta（Cloudflare DNS 证书签发支持 · 安全事件阶段归类修正 · 证书签发可靠性提升） · 双平台镜像 linux/amd64 · linux/arm64</div>
+  <div class="hero-badge"><span class="dot"></span><span class="hero-badge-rows"><span class="hero-badge-row"><b class="stable">稳定版 v2.4.1</b>（拦截页按命中策略生效 · 绑定顺序可调 · 证书重签更自由 · IP 列表与 CRS 排除增强）</span><span class="hero-badge-row"><b class="beta">测试版 v2.4.2-beta</b>（Cloudflare DNS 证书签发支持 · 安全事件阶段归类修正 · 证书签发可靠性提升）</span><span class="hero-badge-row arch">双平台镜像 linux/amd64 · linux/arm64</span></span></div>
   <h1 class="hero-title">负载均衡，本应如此<br><span class="grad">简单而强大</span></h1>
   <p class="hero-sub">
     基于 <b>Caddy</b> 的可视化负载均衡管理平台——<b>WAF 四态防护</b>（OWASP CRS + 地域拦截 + 多来源威胁情报库）、
