@@ -3,6 +3,16 @@
   "source": "https://www.lazybalancer.org/versions.json",
   "versions": [
     {
+      "version": "v2.4.2-beta",
+      "channel": "beta",
+      "channel_label": "测试版",
+      "date": "2026-11-05",
+      "theme": "安全事件阶段归类修正：IP 访问控制拦截不再误标 WAF 阶段。",
+      "notes": [
+        "修复：威胁库黑名单等 IP 访问控制拦截事件误标为 WAF 阶段——触发类型与阶段现在一致显示，详情弹框不再出现「旧版合成规则」提示。"
+      ]
+    },
+    {
       "version": "v2.4.1",
       "channel": "stable",
       "channel_label": "稳定版",
