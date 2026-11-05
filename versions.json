@@ -7,7 +7,7 @@
       "channel": "beta",
       "channel_label": "测试版",
       "date": "2026-11-05",
-      "theme": "Cloudflare DNS 证书签发、安全事件阶段显示修正、DNS 提供商体验优化与底层组件升级。",
+      "theme": "Cloudflare DNS 证书签发、安全事件阶段显示修正、GeoIP 查询与审计计时性能优化、底层组件升级。",
       "notes": [
         "新增：免费证书 DNS 验证支持 Cloudflare——面板创建 API Token（权限 Zone → DNS → Edit 与 Zone → Zone → Read）即可用于签发与自动续签，支持用户 API Token 与账户自有 API Token。",
         "修复：威胁库黑名单等 IP 访问控制拦截事件不再误标为 WAF 阶段——触发类型与阶段一致显示，触发详情不再出现「旧版合成规则」错误提示。",
