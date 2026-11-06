@@ -9,6 +9,7 @@
       "date": "2026-11-05",
       "theme": "免费证书 DNS 验证支持 Cloudflare、GeoIP 查询与审计计时性能优化、底层组件升级。",
       "notes": [
+        "修复：自定义规则「任一满足（OR）」逻辑下，请求头条件限定具体头名不生效——头名限定被忽略后按全部头的值匹配，声明 Brotli 压缩即拦截类规则会误拦正常请求。",
         "新增：TCP 规则安全拦截时向客户端返回一行提示文本（默认 Connection blocked by Lazy Balancer v2，产品名跟随系统品牌设置），再断开连接——不再是无提示静默断连。",
         "新增：免费证书 DNS 验证支持 Cloudflare——面板创建 API Token（权限 Zone → DNS → Edit 与 Zone → Zone → Read）即可用于签发与自动续签，支持用户 API Token 与账户自有 API Token。",
         "新增：自定义规则的请求头条件支持限定具体头名——可只匹配某个头（如 Content-Encoding）的值，精确表达「声明 Brotli 压缩即拦截」这类规则；留空头名则匹配全部头的值。",
