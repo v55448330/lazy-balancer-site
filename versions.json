@@ -7,7 +7,7 @@
       "channel": "stable",
       "channel_label": "稳定版",
       "date": "2026-11-07",
-      "theme": "自定义规则 NTLM 组合互斥门 · X-LB-Protocol 防伪双防线 · allow 交集豁免地域拦截 · 治理常量全面收口 · GeoIP 采样节流 · 任务触发导入窗显式拒绝",
+      "theme": "免费证书 DNS 验证支持 Cloudflare · 自定义规则头名限定与组合互斥 · TCP 拦截提示 · 安全与性能多项加固 · 底层组件升级",
       "notes": [
         "修复：自定义规则「任一满足（OR）」逻辑下，请求头条件限定具体头名不生效——头名限定被忽略后按全部头的值匹配，声明 Brotli 压缩即拦截类规则会误拦正常请求。",
         "新增：TCP 规则安全拦截时向客户端返回一行提示文本（默认 Connection blocked by Lazy Balancer v2，产品名跟随系统品牌设置），再断开连接——不再是无提示静默断连。",
