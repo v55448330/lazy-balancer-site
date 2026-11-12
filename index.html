@@ -480,6 +480,14 @@ section[id], header[id] { scroll-margin-top: 84px; }
   .nav-inner { gap: 14px; }
   .nav-inner > div:not(.nav-links) { margin-left: auto; }
 }
+/* 极窄屏（实测 320px）：logo+GitHub CTA+汉堡三件挤不下，汉堡右边界 334 被
+   overflow-x:hidden 裁掉 14px（页面级 docOverflow=0 是假绿）。顶栏只留 logo+汉堡，
+   GitHub/DockerHub 在菜单底部同样可达。CTA 容器带内联 display:flex，需 !important。 */
+@media (max-width: 359px) {
+  .nav-inner { gap: 10px; padding: 0 14px; }
+  .nav-inner > div:not(.nav-links) { display: none !important; }
+  .nav-toggle { margin-left: auto; }
+}
 @media (min-width: 961px) {
   .mobile-menu, .nav-scrim { display: none; }
 }
