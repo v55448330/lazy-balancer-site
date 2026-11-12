@@ -150,6 +150,60 @@ entry_format_reason() {
   return 0
 }
 
+# —— 统一主题格式（2026-11-13 用户裁定：主题同样要有标准）——
+# 模板：<能力名1>、<能力名2>、<能力名3>。
+#   ≤45 字、≤4 项、分隔符统一「、」、句号结尾、不带类型前缀、禁括号解释；
+#   每个能力名必须与该版本条目同源（双向子串命中），主题不得吹条目没有的能力；
+#   首屏徽标摘要（若该版本有徽标行）必须等于主题去尾句号——消除两份手工文案。
+max_theme_chars=45
+max_theme_items=4
+
+# 主题违规原因（空串=合规）。subjects_file=该版本条目主语清单（每行一个）。
+theme_reason() {
+  local theme="$1" subjects_file="$2" item found
+  local -a items
+  if [[ -z "${theme}" ]]; then
+    printf '主题为空\n'; return 0
+  fi
+  if [[ "$(char_count "${theme}")" -gt "${max_theme_chars}" ]]; then
+    printf '主题 %s 字超上限 %s\n' "$(char_count "${theme}")" "${max_theme_chars}"; return 0
+  fi
+  case "${theme}" in
+    *。) ;;
+    *) printf '主题须以句号结尾\n'; return 0 ;;
+  esac
+  # 只拦「新增/优化/修复/加固」开头：安全/其他 也可能是能力名首词（安全总览…）。
+  case "${theme}" in
+    新增*|优化*|修复*|加固*) printf '主题不得带类型前缀（类型属条目层）\n'; return 0 ;;
+  esac
+  case "${theme}" in
+    *"（"*|*"）"*|*"("*|*")"*) printf '主题不得含括号解释（细节留给条目与文档站）\n'; return 0 ;;
+  esac
+  case "${theme}" in
+    *"·"*|*"，"*|*"——"*|*"："*|*":"*) printf '主题分隔符须统一为「、」\n'; return 0 ;;
+  esac
+  IFS='、' read -r -a items <<<"${theme%。}"
+  if [[ "${#items[@]}" -gt "${max_theme_items}" ]]; then
+    printf '主题 %s 项超上限 %s（合并同类）\n' "${#items[@]}" "${max_theme_items}"; return 0
+  fi
+  for item in "${items[@]}"; do
+    if [[ -z "${item}" ]]; then
+      printf '主题存在空项（检查「、」）\n'; return 0
+    fi
+    found=0
+    while IFS= read -r subject; do
+      [[ -n "${subject}" ]] || continue
+      if [[ "${subject}" == *"${item}"* || "${item}" == *"${subject}"* ]]; then
+        found=1; break
+      fi
+    done <"${subjects_file}"
+    if [[ "${found}" -eq 0 ]]; then
+      printf '主题能力名「%s」在本版本条目中无对应（主题不得超出条目）\n' "${item}"; return 0
+    fi
+  done
+  return 0
+}
+
 # —— 自测：门禁自身的鉴别力（--self-test） ——
 # 每个夹具生成一份精简文档，用 CHANGELOG_DOC 指向它并以子进程跑同一份脚本
 # （隔离全局状态）。事故形态必须红、通过形态必须绿——只验「绿」的门禁无法
@@ -161,12 +215,12 @@ self_test() {
   trap "rm -rf '${work}'" EXIT
 
   run_case() {  # name expect_rc expect_text docfile [version]
-    local name="$1" want_rc="$2" needle="$3" file="$4" ver="${5:-}" got_rc
+    local name="$1" want_rc="$2" needle="$3" file="$4" ver="${5:-}" badge="${6:-}" got_rc
     set +e
     if [[ -n "${ver}" ]]; then
-      out="$(CHANGELOG_DOC="${file}" bash "${self_path}" "${ver}" 2>&1)"
+      out="$(CHANGELOG_DOC="${file}" BADGE_DOC="${badge:-/dev/null}" bash "${self_path}" "${ver}" 2>&1)"
     else
-      out="$(CHANGELOG_DOC="${file}" bash "${self_path}" 2>&1)"
+      out="$(CHANGELOG_DOC="${file}" BADGE_DOC="${badge:-/dev/null}" bash "${self_path}" 2>&1)"
     fi
     got_rc=$?
     set -e
@@ -195,6 +249,7 @@ self_test() {
 <li>新增：威胁大屏·攻击光流——攻击来源连线。</li>
 <li>新增：威胁大屏·流量采样频率——采样间隔可调。</li>
 </ul>
+<p>主题：三栏版式、攻击光流。</p>
 EOF
   run_case "split sub-views are rejected" 1 '能力「威胁大屏」被' "${work}/split-subviews.html"
 
@@ -204,6 +259,7 @@ EOF
 <ul>
 <li>新增：威胁大屏·实时态势——三栏版式与 2D/3D 双视图；攻击光流；流量采样。</li>
 </ul>
+<p>主题：实时态势。</p>
 EOF
   run_case "merged parent entry passes" 0 'OK: v9.9.9' "${work}/merged-parent.html"
 
@@ -214,6 +270,7 @@ EOF
 <li>新增：仪表盘·缓存预热——提前加载热点数据。</li>
 <li>优化：仪表盘·缓存预热能力——提前加载热点数据。</li>
 </ul>
+<p>主题：缓存预热。</p>
 EOF
   run_case "near-synonym subject is rejected" 1 '近义主语' "${work}/synonym.html"
 
@@ -224,6 +281,7 @@ EOF
 <li>优化：集群管理·集群同步——主从配置同步。</li>
 <li>修复：集群管理·集群同步——主从配置同步。</li>
 </ul>
+<p>主题：集群同步。</p>
 EOF
   run_case "exact duplicate subject is rejected" 1 '重复主语' "${work}/exact-dupe.html"
 
@@ -233,6 +291,7 @@ EOF
 <ul>
 <li>新增：规则集·规则导入——批量导入规则。</li>
 </ul>
+<p>主题：规则导入。</p>
 <h3>v9.9.8</h3>
 <ul>
 <li>优化：规则集·规则导入——批量导入规则。</li>
@@ -246,6 +305,7 @@ EOF
 <ul>
 <li>优化：仪表盘·长条目——这一条日志写得太长了已经超过七十个字符的上限需要拆开说明具体细节才符合写作规范要求并且还要继续拉长以确保触发长度门禁同时保留足够多的解释性从句来测试边界行为。</li>
 </ul>
+<p>主题：长条目。</p>
 EOF
   run_case "over-length entry is rejected" 1 '<70 字' "${work}/too-long.html"
 
@@ -254,8 +314,8 @@ EOF
   # 统一格式前缀（优化：+仪表盘+·+界+——）共 10 字，描述 59 字 → 合计 69 字。
   boundary_69="优化：仪表盘·界——$(printf '界%.0s' {1..59})"
   boundary_70="${boundary_69}界"
-  printf '<h3>v9.9.9</h3>\n<ul>\n<li>%s</li>\n</ul>\n' "${boundary_69}" >"${work}/exactly-69.html"
-  printf '<h3>v9.9.9</h3>\n<ul>\n<li>%s</li>\n</ul>\n' "${boundary_70}" >"${work}/exactly-70.html"
+  printf '<h3>v9.9.9</h3>\n<ul>\n<li>%s</li>\n</ul>\n<p>主题：界。</p>\n' "${boundary_69}" >"${work}/exactly-69.html"
+  printf '<h3>v9.9.9</h3>\n<ul>\n<li>%s</li>\n</ul>\n<p>主题：界。</p>\n' "${boundary_70}" >"${work}/exactly-70.html"
   run_case "69-character entry passes" 0 '第 3 行，69 字' "${work}/exactly-69.html"
   run_case "70-character entry is rejected" 1 '第 3 行，70 字' "${work}/exactly-70.html"
 
@@ -266,6 +326,7 @@ EOF
 <li>新增：免费证书·证书上传——手动上传证书文件。</li>
 <li>新增：免费证书·证书上传失败回滚——失败回滚到上一份。</li>
 </ul>
+<p>主题：证书上传、证书上传失败回滚。</p>
 EOF
   run_case "shared prefix only hints" 0 '前缀' "${work}/prefix-hint.html"
 
@@ -275,6 +336,7 @@ EOF
 <ul>
 <li>新增：仪表盘·连接监控面板——弹框查看连接。</li>
 </ul>
+<p>主题：连接监控面板。</p>
 EOF
   run_case "clean section prints item list" 0 '条目清单' "${work}/clean.html"
 
@@ -284,6 +346,7 @@ EOF
 <ul>
 <li>新增：连接监控面板——弹框查看连接。</li>
 </ul>
+<p>主题：连接监控面板。</p>
 EOF
   run_case "missing page separator is rejected" 1 '缺少统一分隔符' "${work}/fmt-no-sep.html"
 
@@ -293,6 +356,7 @@ EOF
 <ul>
 <li>新增：那个卡片·连接监控面板——弹框查看连接。</li>
 </ul>
+<p>主题：连接监控面板。</p>
 EOF
   run_case "unknown page is rejected" 1 '不在面板导航白名单内' "${work}/fmt-bad-page.html"
 
@@ -302,6 +366,7 @@ EOF
 <ul>
 <li>新增：安全总览·自动封禁计数可选四类口径并且支持自定义组合——可选四类计数。</li>
 </ul>
+<p>主题：自动封禁计数。</p>
 EOF
   run_case "sentence-as-capability is rejected" 1 '字超上限' "${work}/fmt-sentence-subject.html"
 
@@ -311,8 +376,105 @@ EOF
 <ul>
 <li>新增：仪表盘·连接监控面板——</li>
 </ul>
+<p>主题：连接监控面板。</p>
 EOF
   run_case "empty description is rejected" 1 '缺少行为描述' "${work}/fmt-no-desc.html"
+
+  # N) 主题门：缺主题必须红（主题是版本段必备件）。
+  cat >"${work}/theme-missing.html" <<'EOF'
+<h3>v9.9.9</h3>
+<ul>
+<li>新增：仪表盘·连接监控面板——弹框查看连接。</li>
+</ul>
+EOF
+  run_case "missing theme is rejected" 1 '缺少主题' "${work}/theme-missing.html"
+
+  # O) 主题门：超 45 字必须红。
+  cat >"${work}/theme-too-long.html" <<'EOF'
+<h3>v9.9.9</h3>
+<ul>
+<li>新增：仪表盘·连接监控面板——弹框查看连接。</li>
+</ul>
+<p>主题：连接监控面板、实时挑战监控、自动封禁口径、触发筛选、人机验证方式、验证组件插入、CC 防护卡片。</p>
+EOF
+  run_case "over-length theme is rejected" 1 '段主题不符统一格式' "${work}/theme-too-long.html"
+
+  # P) 主题门：带类型前缀必须红（类型属条目层）。
+  cat >"${work}/theme-typed.html" <<'EOF'
+<h3>v9.9.9</h3>
+<ul>
+<li>新增：仪表盘·连接监控面板——弹框查看连接。</li>
+</ul>
+<p>主题：新增连接监控面板。</p>
+EOF
+  run_case "typed theme is rejected" 1 '不得带类型前缀' "${work}/theme-typed.html"
+
+  # Q) 主题门：括号解释必须红（细节留给条目与文档站）。
+  cat >"${work}/theme-paren.html" <<'EOF'
+<h3>v9.9.9</h3>
+<ul>
+<li>新增：仪表盘·连接监控面板——弹框查看连接。</li>
+</ul>
+<p>主题：连接监控面板（活跃/待关闭/已关闭）。</p>
+EOF
+  run_case "parenthesised theme is rejected" 1 '不得含括号解释' "${work}/theme-paren.html"
+
+  # R) 主题门：分隔符混用（· 或 ，）必须红。
+  cat >"${work}/theme-sep.html" <<'EOF'
+<h3>v9.9.9</h3>
+<ul>
+<li>新增：仪表盘·连接监控面板——弹框查看连接。</li>
+<li>新增：安全总览·实时挑战监控——查看进行中的会话。</li>
+</ul>
+<p>主题：连接监控面板 · 实时挑战监控。</p>
+EOF
+  run_case "mixed theme separator is rejected" 1 '分隔符须统一' "${work}/theme-sep.html"
+
+  # S) 主题门：无句号结尾必须红。
+  cat >"${work}/theme-no-dot.html" <<'EOF'
+<h3>v9.9.9</h3>
+<ul>
+<li>新增：仪表盘·连接监控面板——弹框查看连接。</li>
+</ul>
+<p>主题：连接监控面板</p>
+EOF
+  run_case "theme without full stop is rejected" 1 '须以句号结尾' "${work}/theme-no-dot.html"
+
+  # T) 主题门：主题能力名在条目中无对应必须红（主题不得超出条目）。
+  cat >"${work}/theme-unmatched.html" <<'EOF'
+<h3>v9.9.9</h3>
+<ul>
+<li>新增：仪表盘·连接监控面板——弹框查看连接。</li>
+</ul>
+<p>主题：连接监控面板、威胁大屏。</p>
+EOF
+  run_case "theme beyond entries is rejected" 1 '在本版本条目中无对应' "${work}/theme-unmatched.html"
+
+  # U) 主题门：项数超 4 必须红（首屏可读，合并同类）。
+  cat >"${work}/theme-too-many.html" <<'EOF'
+<h3>v9.9.9</h3>
+<ul>
+<li>新增：仪表盘·甲能力——行为一。</li>
+<li>新增：仪表盘·乙能力——行为二。</li>
+<li>新增：仪表盘·丙能力——行为三。</li>
+<li>新增：仪表盘·丁能力——行为四。</li>
+<li>新增：仪表盘·戊能力——行为五。</li>
+</ul>
+<p>主题：甲能力、乙能力、丙能力、丁能力、戊能力。</p>
+EOF
+  run_case "too many theme items are rejected" 1 '项超上限' "${work}/theme-too-many.html"
+
+  # V) 徽标同源：摘要与主题不一致必须红（两处不得各写一份文案）。
+  cat >"${work}/badge-mismatch.html" <<'EOF'
+<b>测试版 v9.9.9</b>（连接监控面板与别的能力）
+EOF
+  run_case "badge differing from theme is rejected" 1 '徽标摘要与主题不同源' "${work}/clean.html" "" "${work}/badge-mismatch.html"
+
+  # W) 徽标同源：摘要=主题去尾句号必须绿。
+  cat >"${work}/badge-match.html" <<'EOF'
+<b>测试版 v9.9.9</b>（连接监控面板）
+EOF
+  run_case "badge matching theme passes" 0 'OK: v9.9.9' "${work}/clean.html" "" "${work}/badge-match.html"
 
   if [[ "${rc}" -eq 0 ]]; then
     echo "selftest: all cases passed"
@@ -373,6 +535,29 @@ awk '
     printf "%s\t%s\t%s\t%d\t%s\n", cur, typ, s, NR, full
   }
 ' "${doc}" >"${records_file}" || { echo "ERROR: 解析 ${doc} 失败" >&2; exit 1; }
+
+# —— 抽取各版本主题：version<TAB>line<TAB>theme（每段取第一条「主题：」）——
+themes_file="${tmp_dir}/themes.tsv"
+awk '
+  { line = $0 }
+  line ~ /^[ \t]*<h3>v[0-9]+\.[0-9]+\.[0-9]+/ {
+    ver = line
+    sub(/^[ \t]*<h3>/, "", ver)
+    sub(/[（(].*$/, "", ver)
+    sub(/<.*$/, "", ver)
+    gsub(/[ \t]/, "", ver)
+    cur = ver
+    next
+  }
+  cur != "" && line ~ /主题：/ {
+    s = line
+    sub(/^.*主题：/, "", s)
+    gsub(/<[^>]*>/, "", s)
+    gsub(/^[ \t]+|[ \t]+$/, "", s)
+    if (s != "") printf "%s\t%d\t%s\n", cur, NR, s
+    cur = ""
+  }
+' "${doc}" >"${themes_file}" || { echo "ERROR: 解析主题失败" >&2; exit 1; }
 
 version="${1:-}"
 if [[ -z "${version}" ]]; then
@@ -539,12 +724,43 @@ if [[ -n "${format_report}" ]]; then
   fail=1
 fi
 
+# —— 统一主题格式：<能力名1>、<能力名2>…。（2026-11-13 用户裁定）——
+# 主题与条目同源：每个能力名必须能在本版本条目主语中找到（双向子串），
+# 且首屏徽标摘要必须等于主题去尾句号——两处不得各写一份文案。
+theme_line="$(awk -F'\t' -v v="${version}" '$1 == v { print $3; exit }' "${themes_file}")"
+subjects_file="${tmp_dir}/subjects.txt"
+cut -f3 "${section_file}" >"${subjects_file}"
+if [[ -z "${theme_line}" ]]; then
+  echo "ERROR: ${version} 段缺少主题（theme）——须为 <能力名1>、<能力名2>…。" >&2
+  fail=1
+else
+  reason="$(theme_reason "${theme_line}" "${subjects_file}")"
+  if [[ -n "${reason}" ]]; then
+    echo "ERROR: ${version} 段主题不符统一格式 <能力名1>、<能力名2>…。（≤${max_theme_chars} 字、≤${max_theme_items} 项、能力名与本版本条目同源）：${reason}" >&2
+    echo "    ${theme_line}" >&2
+    fail=1
+  fi
+  badge_doc="${BADGE_DOC:-index.html}"
+  if [[ -f "${badge_doc}" ]]; then
+    badge="$(grep -o '<b>[^<]*</b>（[^）]*）' "${badge_doc}" | grep -F -- "${version}" | head -1 | sed -E 's/^.*（//; s/）$//')"
+    if [[ -n "${badge}" && "${badge}" != "${theme_line%。}" ]]; then
+      echo "ERROR: ${version} 首屏徽标摘要与主题不同源（徽标=主题去尾句号，不得各写一份）：" >&2
+      echo "    徽标：${badge}" >&2
+      echo "    主题：${theme_line%。}" >&2
+      fail=1
+    fi
+  fi
+fi
+
 # —— 条目清单（交付报告直接贴这一段）——
 if [[ -n "${hint_report}" ]]; then
   echo "提示（不失败，需人工确认）：${version} 段有主语互含前缀，请确认不是同一能力被拆成两条："
   printf '%s' "${hint_report}"
 fi
 echo "版本段：${version}（上一版：${prev_version:-无}）"
+if [[ -n "${theme_line}" ]]; then
+  echo "主题（上限 ${max_theme_chars} 字，实际 $(char_count "${theme_line}") 字）：${theme_line}"
+fi
 echo "条目清单（类型 | 页面 | 能力名 | 字数）："
 while IFS=$'\t' read -r _ver typ subject lineno text; do
   [[ -n "${text}" ]] || continue
@@ -560,4 +776,4 @@ echo "分类计数：$(awk -F'\t' '{ c[$2]++ } END { for (t in c) printf " %s=%d
 if [[ "${fail}" -ne 0 ]]; then
   exit 1
 fi
-echo "OK: ${version} 段格式统一（页面·能力名——描述）、无重复/近义主语、无能力拆分、无跨版本归类冲突、单条均 ≤${max_chars} 字。"
+echo "OK: ${version} 段主题与条目格式统一（主题=能力名并列；条目=页面·能力名——描述）、无重复/近义主语、无能力拆分、无跨版本归类冲突、单条均 ≤${max_chars} 字。"
