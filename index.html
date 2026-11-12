@@ -88,7 +88,7 @@ body {
 .wrap { max-width: 1160px; margin: 0 auto; padding: 0 28px; }
 
 /* ── 导航 ── */
-nav {
+body > nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
   backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
   background: rgba(6, 7, 13, 0.72);
@@ -401,6 +401,92 @@ footer { margin-top: 110px; border-top: 1px solid rgba(255,255,255,0.07); paddin
   .nav-inner { gap: 14px; padding: 0 18px; }
   nav .nav-cta:nth-of-type(2) { display: none; }
 }
+
+/* ── 移动端导航：≤960px 桌面链接收起，汉堡菜单接管（原先直接 display:none 无替代入口） ── */
+.nav-toggle {
+  display: none; width: 44px; height: 44px; flex: none; padding: 0;
+  align-items: center; justify-content: center; cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.14); border-radius: 12px;
+  background: rgba(255,255,255,0.05);
+  transition: border-color .2s, background .2s;
+}
+.nav-toggle:hover { border-color: rgba(79,140,255,0.6); background: rgba(79,140,255,0.12); }
+.nav-toggle:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+.nav-toggle i { position: relative; display: block; width: 18px; height: 2px; border-radius: 2px; background: var(--text); transition: transform .28s cubic-bezier(.4,0,.2,1); }
+.nav-toggle i::before, .nav-toggle i::after { content: ''; position: absolute; left: 0; width: 18px; height: 2px; border-radius: 2px; background: var(--text); transition: transform .28s cubic-bezier(.4,0,.2,1), opacity .2s; }
+.nav-toggle i::before { top: -6px; }
+.nav-toggle i::after { top: 6px; }
+.nav-toggle[aria-expanded="true"] i { transform: rotate(45deg); }
+.nav-toggle[aria-expanded="true"] i::before { transform: translateY(6px) rotate(-90deg); }
+.nav-toggle[aria-expanded="true"] i::after { transform: translateY(-6px); opacity: 0; }
+
+.nav-scrim {
+  position: fixed; inset: 64px 0 0; z-index: 98;
+  background: rgba(6,7,13,0.6); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+  opacity: 0; visibility: hidden; transition: opacity .26s, visibility 0s linear .26s;
+}
+.nav-scrim.open { opacity: 1; visibility: visible; transition: opacity .26s, visibility 0s; }
+
+.mobile-menu {
+  position: fixed; top: 64px; left: 0; right: 0; z-index: 99;
+  max-height: calc(100vh - 64px); max-height: calc(100dvh - 64px);
+  overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
+  padding: 8px 18px calc(18px + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, rgba(11,13,24,0.985), rgba(6,7,13,0.985));
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 26px 60px rgba(0,0,0,0.55);
+  transform: translateY(-14px); opacity: 0; visibility: hidden;
+  /* visibility 不参与时长过渡：开启零延迟立即可见（否则当帧仍算 hidden，
+     focus() 被浏览器忽略、链接也点不中），关闭延迟到淡出结束再隐藏。 */
+  transition: transform .3s cubic-bezier(.4,0,.2,1), opacity .26s, visibility 0s linear .3s;
+  scrollbar-width: thin; scrollbar-color: #4f8cff rgba(255,255,255,0.04);
+}
+.mobile-menu.open { transform: translateY(0); opacity: 1; visibility: visible; transition: transform .3s cubic-bezier(.4,0,.2,1), opacity .26s, visibility 0s; }
+.mobile-menu::-webkit-scrollbar { width: 8px; }
+.mobile-menu::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); }
+.mobile-menu::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--blue), var(--violet)); border-radius: 8px; }
+.mobile-menu::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, var(--cyan), var(--blue)); }
+.mm-label { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--text-3); padding: 12px 6px 6px; }
+.mm-links { display: flex; flex-direction: column; gap: 2px; }
+.mm-links a {
+  display: flex; align-items: center; gap: 12px; min-height: 46px;
+  padding: 10px 12px; border-radius: 12px; text-decoration: none;
+  color: var(--text-2); font-size: 15px; border: 1px solid transparent;
+  transition: color .18s, background .18s, border-color .18s;
+}
+.mm-links a::before { content: ''; width: 6px; height: 6px; border-radius: 2px; background: currentColor; opacity: .4; flex: none; transition: opacity .18s, box-shadow .18s; }
+.mm-links a:hover, .mm-links a:active { color: var(--text); background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); }
+.mm-links a.active { color: var(--cyan); background: rgba(56,225,255,0.08); border-color: rgba(56,225,255,0.28); }
+.mm-links a.active::before { opacity: 1; box-shadow: 0 0 10px rgba(56,225,255,0.75); }
+.mobile-menu.open .mm-links a { animation: mmIn .32s cubic-bezier(.2,.7,.3,1) backwards; }
+.mobile-menu.open .mm-links a:nth-child(1) { animation-delay: .02s; }
+.mobile-menu.open .mm-links a:nth-child(2) { animation-delay: .05s; }
+.mobile-menu.open .mm-links a:nth-child(3) { animation-delay: .08s; }
+.mobile-menu.open .mm-links a:nth-child(4) { animation-delay: .11s; }
+.mobile-menu.open .mm-links a:nth-child(5) { animation-delay: .14s; }
+.mobile-menu.open .mm-links a:nth-child(6) { animation-delay: .17s; }
+.mobile-menu.open .mm-links a:nth-child(7) { animation-delay: .20s; }
+.mobile-menu.open .mm-links a:nth-child(8) { animation-delay: .23s; }
+.mobile-menu.open .mm-links a:nth-child(9) { animation-delay: .26s; }
+@keyframes mmIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: none; } }
+.mm-cta { display: flex; gap: 10px; margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.07); }
+.mm-cta .nav-cta { flex: 1; justify-content: center; min-height: 44px; display: flex !important; }
+body.menu-open { overflow: hidden; }
+.nav-links a.active { color: var(--cyan); }
+/* 锚点跳转落在固定导航下方，不被 64px 顶栏遮住标题 */
+section[id], header[id] { scroll-margin-top: 84px; }
+@media (max-width: 960px) {
+  .nav-toggle { display: flex; }
+  .nav-inner { gap: 14px; }
+  .nav-inner > div:not(.nav-links) { margin-left: auto; }
+}
+@media (min-width: 961px) {
+  .mobile-menu, .nav-scrim { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mobile-menu, .nav-scrim, .nav-toggle i, .nav-toggle i::before, .nav-toggle i::after { transition-duration: .01ms; }
+  .mobile-menu.open .mm-links a { animation: none; }
+}
 </style>
 <!-- 百度统计（用户显式要求的外部分析脚本；本站其余样式/脚本仍全内联） -->
 <script>
@@ -466,8 +552,34 @@ var _hmt = _hmt || [];
       DockerHub
     </a>
     </div>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu" aria-label="打开菜单"><i></i></button>
   </div>
 </nav>
+<div class="nav-scrim" aria-hidden="true"></div>
+<div class="mobile-menu" id="mobile-menu" aria-hidden="true" aria-label="站点导航">
+  <div class="mm-label">导航</div>
+  <nav class="mm-links" aria-label="移动导航">
+    <a href="#highlights">亮点</a>
+    <a href="#features">全景</a>
+    <a href="#balancer">负载均衡</a>
+    <a href="#waf">WAF 防护</a>
+    <a href="#enterprise">企业能力</a>
+    <a href="#arch">架构</a>
+    <a href="#shots">预览</a>
+    <a href="docs.html">文档</a>
+    <a href="#start">快速开始</a>
+  </nav>
+  <div class="mm-cta">
+    <a class="nav-cta" href="https://github.com/v55448330/lazy-balancer-v2" target="_blank" rel="noopener">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+      GitHub
+    </a>
+    <a class="nav-cta" href="https://hub.docker.com/r/v55448330/lazy-balancer-v2" target="_blank" rel="noopener">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.98 3.18h2.15v2.14h-2.15V3.18zm-3.23 0h2.15v2.14h-2.15V3.18zm0 3.23h2.15v2.14h-2.15V6.41zm-3.22 0h2.15v2.14H7.53V6.41zm0-3.23h2.15v2.14H7.53V3.18zm-3.23 3.23h2.15v2.14H4.3V6.41zm9.68 1.07c-.92-.63-1.72-1.5-1.94-2.8l-.24-1.4-.71.45c-.92.6-1.34 1.7-1.2 2.72.1.9.57 1.63 1.36 2.03H4.3c-1.18 0-2.14.96-2.14 2.15 0 .56.2 1.07.56 1.46 1.1 1.17 2.9 1.9 5.5 1.9 4.04 0 6.9-1.72 8.2-4.84.6.4 1.3.4 1.8 0 .6-.5.7-1.4.2-2l-.44-.67zM0 14.24V20.5c0 .83.67 1.5 1.5 1.5h21c.83 0 1.5-.67 1.5-1.5v-6.26H0z"/></svg>
+      DockerHub
+    </a>
+  </div>
+</div>
 
 <header class="hero wrap" id="top">
   <div class="hero-badge"><span class="hero-badge-rows"><span class="hero-badge-row stable"><span class="row-dot"></span><span><b>正式版 v2.4.3</b>（多语言支持、威胁大屏时钟、HTTP→HTTPS 跳转、结构化弹框）</span></span><span class="hero-badge-row beta"><span class="row-dot"></span><span><b>测试版 v2.4.4-beta</b>（CC 防护策略、人机验证方式、实时挑战监控、连接监控面板）</span></span><span class="hero-badge-row arch"><span class="row-dot"></span><span>双平台镜像 linux/amd64 · linux/arm64</span></span></div>
@@ -1210,6 +1322,69 @@ document.querySelectorAll('.f-card').forEach((card) => {
     if (e.key === 'ArrowLeft') show(cur - 1);
     if (e.key === 'ArrowRight') show(cur + 1);
   });
+})();
+</script>
+<script>
+/* 移动端导航：汉堡开关 + 焦点管理 + 当前区块高亮（桌面链接与移动菜单同源） */
+(function () {
+  var toggle = document.querySelector('.nav-toggle');
+  var menu = document.getElementById('mobile-menu');
+  var scrim = document.querySelector('.nav-scrim');
+  if (!toggle || !menu || !scrim) return;
+  var isOpen = false;
+  function setOpen(open, restoreFocus) {
+    if (open === isOpen) return;
+    isOpen = open;
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    toggle.setAttribute('aria-label', open ? '关闭菜单' : '打开菜单');
+    menu.setAttribute('aria-hidden', open ? 'false' : 'true');
+    menu.classList.toggle('open', open);
+    scrim.classList.toggle('open', open);
+    document.body.classList.toggle('menu-open', open);
+    if (open) {
+      /* visibility 参与过渡：hidden→visible 的过渡起点即 visible，强制刷新一次
+         样式就能立刻聚焦。rAF 回调早于样式重算，实测焦点会停在 body，故不用。 */
+      void getComputedStyle(menu).visibility;
+      var first = menu.querySelector('.mm-links a');
+      if (first) first.focus();
+    } else if (restoreFocus) {
+      toggle.focus();
+    }
+  }
+  toggle.addEventListener('click', function () { setOpen(!isOpen, true); });
+  scrim.addEventListener('click', function () { setOpen(false, true); });
+  menu.addEventListener('click', function (e) {
+    var a = e.target.closest('a');
+    if (!a) return;
+    var href = a.getAttribute('href') || '';
+    setOpen(false, false);
+    if (href.charAt(0) !== '#') return;
+    var target = document.getElementById(href.slice(1));
+    if (!target) return;
+    /* menu-open 期间 body overflow:hidden 会把 body 变成滚动容器、吞掉默认锚点
+       跳转（实测点链接后页面不动）。先解锁，再显式滚到目标（scroll-margin-top 生效）。 */
+    e.preventDefault();
+    requestAnimationFrame(function () {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      history.replaceState(null, '', href);
+    });
+  });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && isOpen) setOpen(false, true); });
+  window.addEventListener('resize', function () { if (window.innerWidth > 960 && isOpen) setOpen(false, false); });
+
+  var links = Array.prototype.slice.call(document.querySelectorAll('.nav-links a[href^="#"], .mm-links a[href^="#"]'));
+  var ids = [];
+  links.forEach(function (a) { var id = a.getAttribute('href').slice(1); if (id && ids.indexOf(id) === -1) ids.push(id); });
+  var sections = ids.map(function (id) { return document.getElementById(id); }).filter(Boolean);
+  if (!sections.length || !('IntersectionObserver' in window)) return;
+  var ratios = {};
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) { ratios[en.target.id] = en.isIntersecting ? en.intersectionRatio : 0; });
+    var best = null, bestRatio = 0;
+    sections.forEach(function (s) { var r = ratios[s.id] || 0; if (r > bestRatio) { bestRatio = r; best = s.id; } });
+    links.forEach(function (a) { a.classList.toggle('active', !!best && a.getAttribute('href') === '#' + best); });
+  }, { rootMargin: '-80px 0px -55% 0px', threshold: [0, 0.15, 0.35, 0.6, 1] });
+  sections.forEach(function (s) { io.observe(s); });
 })();
 </script>
 </body>
