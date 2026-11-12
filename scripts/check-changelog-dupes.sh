@@ -88,6 +88,68 @@ canonicalize_subject() {
   normalize_subject "$1"
 }
 
+# —— 统一条目格式（用户裁定：更新日志必须有统一标准与格式，并写清在哪个页面）——
+# 模板：<类型>：<页面>·<能力名>——<一句话行为描述>
+#   类型 = 新增/优化/修复/加固/安全/其他；页面 = 面板真实导航名（下方白名单），
+#   不得漏写、不得写「那个卡片」之类模糊位置；能力名 = 名词短语 ≤16 字（非整句）；
+#   分隔符固定「·」与「——」；描述一句话，子能力用「；」并入，不另立条目。
+# 判定字节安全：白名单 grep -Fx 全行匹配、分隔符 bash 模式匹配、字数 char_count。
+# 白名单与 awk 的 full 字段同口径（已去空白），故一律不含空格。
+# 只约束被测版本段：历史段按当时口径保留，不回改、不参与格式判定。
+entry_pages() {
+  cat <<'EOF'
+仪表盘
+负载均衡
+安全总览
+安全策略
+拦截页面
+规则集
+事件日志
+配置预览
+系统设置
+用户认证
+API密钥
+集群管理
+免费证书
+任务监控
+操作日志
+威胁大屏
+全局
+EOF
+}
+
+# 字符数（与 locale 无关）：去掉 UTF-8 续接字节后的字节数即字符数。
+# 定义在自测入口之前——自测夹具按同一口径构造长度边界。
+char_count() {
+  printf '%s' "$1" | LC_ALL=C tr -d '\200-\277' | LC_ALL=C wc -c | tr -d ' '
+}
+
+max_subject_chars=16
+# 违规原因（空串=合规）：逐条给因，便于按行修正；不做多字节相等判定。
+entry_format_reason() {
+  local body="$1" page subject desc
+  case "${body}" in
+    *"·"*"——"*) ;;
+    *) printf '缺少统一分隔符（应为 <页面>·<能力名>——<描述>）\n'; return 0 ;;
+  esac
+  page="${body%%·*}"
+  subject="${body#*·}"; subject="${subject%%——*}"
+  desc="${body#*——}"
+  if [[ -z "${page}" || -z "${subject}" ]]; then
+    printf '页面或能力名为空\n'; return 0
+  fi
+  if [[ -z "${desc}" ]]; then
+    printf '缺少行为描述（「——」后不能为空）\n'; return 0
+  fi
+  if ! entry_pages | LC_ALL=C grep -Fxq -- "${page}"; then
+    printf '页面「%s」不在面板导航白名单内\n' "${page}"; return 0
+  fi
+  if [[ "$(char_count "${subject}")" -gt "${max_subject_chars}" ]]; then
+    printf '能力名 %s 字超上限 %s（应为名词短语，非整句）\n' "$(char_count "${subject}")" "${max_subject_chars}"; return 0
+  fi
+  return 0
+}
+
 # —— 自测：门禁自身的鉴别力（--self-test） ——
 # 每个夹具生成一份精简文档，用 CHANGELOG_DOC 指向它并以子进程跑同一份脚本
 # （隔离全局状态）。事故形态必须红、通过形态必须绿——只验「绿」的门禁无法
@@ -127,11 +189,11 @@ self_test() {
   cat >"${work}/split-subviews.html" <<'EOF'
 <h3>v9.9.9</h3>
 <ul>
-<li>新增：威胁大屏——三栏版式。</li>
-<li>新增：安全态势面板。</li>
-<li>新增：2D/3D 双视图。</li>
-<li>新增：攻击光流。</li>
-<li>新增：流量采样频率可调。</li>
+<li>新增：威胁大屏·三栏版式——左中右三栏布局。</li>
+<li>新增：威胁大屏·安全态势面板——态势汇总一览。</li>
+<li>新增：威胁大屏·2D/3D 双视图——两种风格切换。</li>
+<li>新增：威胁大屏·攻击光流——攻击来源连线。</li>
+<li>新增：威胁大屏·流量采样频率——采样间隔可调。</li>
 </ul>
 EOF
   run_case "split sub-views are rejected" 1 '能力「威胁大屏」被' "${work}/split-subviews.html"
@@ -140,7 +202,7 @@ EOF
   cat >"${work}/merged-parent.html" <<'EOF'
 <h3>v9.9.9</h3>
 <ul>
-<li>新增：威胁大屏——三栏版式与 2D/3D 双视图；攻击光流；流量采样。</li>
+<li>新增：威胁大屏·实时态势——三栏版式与 2D/3D 双视图；攻击光流；流量采样。</li>
 </ul>
 EOF
   run_case "merged parent entry passes" 0 'OK: v9.9.9' "${work}/merged-parent.html"
@@ -149,8 +211,8 @@ EOF
   cat >"${work}/synonym.html" <<'EOF'
 <h3>v9.9.9</h3>
 <ul>
-<li>新增：缓存预热。</li>
-<li>优化：缓存预热能力。</li>
+<li>新增：仪表盘·缓存预热——提前加载热点数据。</li>
+<li>优化：仪表盘·缓存预热能力——提前加载热点数据。</li>
 </ul>
 EOF
   run_case "near-synonym subject is rejected" 1 '近义主语' "${work}/synonym.html"
@@ -159,8 +221,8 @@ EOF
   cat >"${work}/exact-dupe.html" <<'EOF'
 <h3>v9.9.9</h3>
 <ul>
-<li>优化：集群同步。</li>
-<li>修复：集群同步。</li>
+<li>优化：集群管理·集群同步——主从配置同步。</li>
+<li>修复：集群管理·集群同步——主从配置同步。</li>
 </ul>
 EOF
   run_case "exact duplicate subject is rejected" 1 '重复主语' "${work}/exact-dupe.html"
@@ -169,11 +231,11 @@ EOF
   cat >"${work}/cross-version.html" <<'EOF'
 <h3>v9.9.9</h3>
 <ul>
-<li>新增：规则导入。</li>
+<li>新增：规则集·规则导入——批量导入规则。</li>
 </ul>
 <h3>v9.9.8</h3>
 <ul>
-<li>优化：规则导入。</li>
+<li>优化：规则集·规则导入——批量导入规则。</li>
 </ul>
 EOF
   run_case "cross-version add conflicts" 1 '已出现在 v9.9.8' "${work}/cross-version.html"
@@ -182,14 +244,15 @@ EOF
   cat >"${work}/too-long.html" <<'EOF'
 <h3>v9.9.9</h3>
 <ul>
-<li>优化：这一条日志写得太长了已经超过七十个字符的上限需要拆开说明具体细节才符合写作规范要求并且还要继续拉长以确保触发长度门禁同时保留足够多的解释性从句来测试边界行为。</li>
+<li>优化：仪表盘·长条目——这一条日志写得太长了已经超过七十个字符的上限需要拆开说明具体细节才符合写作规范要求并且还要继续拉长以确保触发长度门禁同时保留足够多的解释性从句来测试边界行为。</li>
 </ul>
 EOF
   run_case "over-length entry is rejected" 1 '<70 字' "${work}/too-long.html"
 
   # G) 精确长度边界：类型前缀计入正文，69 字必须绿，70 字必须红。
   # run_case 同时断言退出码与门禁输出的实际字数，防止夹具长度或判定口径漂移。
-  boundary_69="优化：$(printf '界%.0s' {1..66})"
+  # 统一格式前缀（优化：+仪表盘+·+界+——）共 10 字，描述 59 字 → 合计 69 字。
+  boundary_69="优化：仪表盘·界——$(printf '界%.0s' {1..59})"
   boundary_70="${boundary_69}界"
   printf '<h3>v9.9.9</h3>\n<ul>\n<li>%s</li>\n</ul>\n' "${boundary_69}" >"${work}/exactly-69.html"
   printf '<h3>v9.9.9</h3>\n<ul>\n<li>%s</li>\n</ul>\n' "${boundary_70}" >"${work}/exactly-70.html"
@@ -200,8 +263,8 @@ EOF
   cat >"${work}/prefix-hint.html" <<'EOF'
 <h3>v9.9.9</h3>
 <ul>
-<li>新增：证书上传。</li>
-<li>新增：证书上传失败回滚。</li>
+<li>新增：免费证书·证书上传——手动上传证书文件。</li>
+<li>新增：免费证书·证书上传失败回滚——失败回滚到上一份。</li>
 </ul>
 EOF
   run_case "shared prefix only hints" 0 '前缀' "${work}/prefix-hint.html"
@@ -210,10 +273,46 @@ EOF
   cat >"${work}/clean.html" <<'EOF'
 <h3>v9.9.9</h3>
 <ul>
-<li>新增：缓存预热。</li>
+<li>新增：仪表盘·连接监控面板——弹框查看连接。</li>
 </ul>
 EOF
   run_case "clean section prints item list" 0 '条目清单' "${work}/clean.html"
+
+  # J) 格式门：缺统一分隔符（旧写法「能力——描述」漏页面）必须红。
+  cat >"${work}/fmt-no-sep.html" <<'EOF'
+<h3>v9.9.9</h3>
+<ul>
+<li>新增：连接监控面板——弹框查看连接。</li>
+</ul>
+EOF
+  run_case "missing page separator is rejected" 1 '缺少统一分隔符' "${work}/fmt-no-sep.html"
+
+  # K) 格式门：页面不在面板导航白名单（模糊位置/自造页面名）必须红。
+  cat >"${work}/fmt-bad-page.html" <<'EOF'
+<h3>v9.9.9</h3>
+<ul>
+<li>新增：那个卡片·连接监控面板——弹框查看连接。</li>
+</ul>
+EOF
+  run_case "unknown page is rejected" 1 '不在面板导航白名单内' "${work}/fmt-bad-page.html"
+
+  # L) 格式门：能力名写成整句（>16 字）必须红——能力名是名词短语。
+  cat >"${work}/fmt-sentence-subject.html" <<'EOF'
+<h3>v9.9.9</h3>
+<ul>
+<li>新增：安全总览·自动封禁计数可选四类口径并且支持自定义组合——可选四类计数。</li>
+</ul>
+EOF
+  run_case "sentence-as-capability is rejected" 1 '字超上限' "${work}/fmt-sentence-subject.html"
+
+  # M) 格式门：「——」后无描述必须红（只有位置没有行为=无效条目）。
+  cat >"${work}/fmt-no-desc.html" <<'EOF'
+<h3>v9.9.9</h3>
+<ul>
+<li>新增：仪表盘·连接监控面板——</li>
+</ul>
+EOF
+  run_case "empty description is rejected" 1 '缺少行为描述' "${work}/fmt-no-desc.html"
 
   if [[ "${rc}" -eq 0 ]]; then
     echo "selftest: all cases passed"
@@ -254,12 +353,15 @@ awk '
     s = line
     sub(/^.*<li>/, "", s)
     gsub(/<[^>]*>/, "", s)
-    if (s !~ /^(新增|优化|修复|其他)[：:]/) next
+    if (s !~ /^(新增|优化|修复|加固|安全|其他)[：:]/) next
     full = s
     gsub(/[ \t]+/, "", full)
     typ = s
     sub(/[：:].*$/, "", typ)
-    sub(/^(新增|优化|修复|其他)[：:]/, "", s)
+    sub(/^(新增|优化|修复|加固|安全|其他)[：:]/, "", s)
+    # 统一格式的页面前缀（<页面>·）不参与主语去重/跨版本判定——页面由格式门
+    # 单独校验；剥掉后主语=能力名，与历史段（无页面前缀）同口径可比。
+    sub(/^[^·]*·/, "", s)
     gsub(/——.*$/, "", s)
     gsub(/—.*$/, "", s)
     gsub(/，.*$/, "", s)
@@ -404,9 +506,6 @@ done <"${norm_file}"
 # 口径：条目可见正文（类型前缀＋描述，去 HTML 标签、去空白）的 UTF-8 字符数。
 # 计数与 locale 无关（BSD awk 的 length() 数的是字节）：去掉全部续接字节
 # （0x80-0xBF）后的字节数即字符数。
-char_count() {
-  printf '%s' "$1" | LC_ALL=C tr -d '\200-\277' | LC_ALL=C wc -c | tr -d ' '
-}
 max_chars=69
 over_report=""
 while IFS=$'\t' read -r _ver _typ _subject lineno text; do
@@ -422,20 +521,43 @@ if [[ -n "${over_report}" ]]; then
   fail=1
 fi
 
+# —— 统一条目格式：<类型>：<页面>·<能力名>——<描述>（用户裁定）——
+# 页面必须在面板导航白名单内（写清在哪个页面），分隔符固定，能力名为名词短语。
+# 与长度门同口径：只约束被测版本段，历史段按当时口径保留。
+format_report=""
+while IFS=$'\t' read -r _ver _typ _subject lineno text; do
+  [[ -n "${text}" ]] || continue
+  body="${text#*[:：]}"
+  reason="$(entry_format_reason "${body}")"
+  if [[ -n "${reason}" ]]; then
+    format_report+="    第 ${lineno} 行：${reason}｜${text}"$'\n'
+  fi
+done <"${section_file}"
+if [[ -n "${format_report}" ]]; then
+  echo "ERROR: ${version} 段有条目不符统一格式 <类型>：<页面>·<能力名>——<一句话行为描述>（页面须为面板导航名，能力名 ≤${max_subject_chars} 字）：" >&2
+  printf '%s' "${format_report}" >&2
+  fail=1
+fi
+
 # —— 条目清单（交付报告直接贴这一段）——
 if [[ -n "${hint_report}" ]]; then
   echo "提示（不失败，需人工确认）：${version} 段有主语互含前缀，请确认不是同一能力被拆成两条："
   printf '%s' "${hint_report}"
 fi
 echo "版本段：${version}（上一版：${prev_version:-无}）"
-echo "条目清单（类型 | 主语 | 字数）："
+echo "条目清单（类型 | 页面 | 能力名 | 字数）："
 while IFS=$'\t' read -r _ver typ subject lineno text; do
   [[ -n "${text}" ]] || continue
-  printf '  %s | %s（第 %s 行，%s 字）\n' "${typ}" "${subject}" "${lineno}" "$(char_count "${text}")"
+  body="${text#*[:：]}"
+  case "${body}" in
+    *"·"*) page="${body%%·*}" ;;
+    *) page="—" ;;
+  esac
+  printf '  %s | %s | %s（第 %s 行，%s 字）\n' "${typ}" "${page}" "${subject}" "${lineno}" "$(char_count "${text}")"
 done <"${section_file}"
 echo "分类计数：$(awk -F'\t' '{ c[$2]++ } END { for (t in c) printf " %s=%d", t, c[t]; printf " 合计=%d", NR }' "${section_file}")"
 
 if [[ "${fail}" -ne 0 ]]; then
   exit 1
 fi
-echo "OK: ${version} 段无重复/近义主语、无能力拆分、无跨版本归类冲突、单条均 ≤${max_chars} 字。"
+echo "OK: ${version} 段格式统一（页面·能力名——描述）、无重复/近义主语、无能力拆分、无跨版本归类冲突、单条均 ≤${max_chars} 字。"
