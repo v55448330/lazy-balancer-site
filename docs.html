@@ -223,26 +223,84 @@ footer { border-top: 1px solid rgba(255,255,255,0.06); padding: 34px 0 44px; }
 @media (max-width: 960px) {
   .docs-layout { grid-template-columns: 1fr; gap: 0; }
   .toc { display: none; }
+  /* 移动端目录导轨：全幅 sticky（原先背景只有内容宽，两侧 28px 天沟露出滚动正文） */
   .toc-chips {
-    display: flex; gap: 8px; overflow-x: auto; padding: 4px 0 18px;
-    position: sticky; top: 64px; z-index: 50;
-    background: rgba(6,7,13,0.88); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-    scrollbar-width: none;
-    min-width: 0;
+    display: block; position: sticky; top: 64px; z-index: 50;
+    margin-inline: -28px; padding: 0; min-width: 0;
+    background: linear-gradient(180deg, rgba(11,13,24,0.97), rgba(6,7,13,0.95));
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    box-shadow: 0 12px 26px rgba(0,0,0,0.4);
   }
-  .toc-chips::-webkit-scrollbar { display: none; }
+  /* 两端渐隐：仅在对应方向还有内容时出现，替代「完全隐藏滚动条」的无提示形态 */
+  .toc-chips::before, .toc-chips::after {
+    content: ''; position: absolute; top: 0; bottom: 0; width: 28px;
+    pointer-events: none; z-index: 2; opacity: 0; transition: opacity .2s;
+  }
+  .toc-chips::before { left: 0; background: linear-gradient(90deg, rgba(6,7,13,0.96), rgba(6,7,13,0)); }
+  .toc-chips::after { right: 0; background: linear-gradient(270deg, rgba(6,7,13,0.96), rgba(6,7,13,0)); }
+  .toc-chips.can-left::before, .toc-chips.can-right::after { opacity: 1; }
+  .toc-rail-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 12px; padding: 9px 28px 0;
+  }
+  .toc-rail-label { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--text-3); font-weight: 600; }
+  .toc-rail-count { font-size: 11.5px; color: var(--text-3); font-variant-numeric: tabular-nums; }
+  .toc-rail-count b { color: var(--cyan); font-size: 13px; font-weight: 700; }
+  .toc-rail-scroll {
+    position: relative; display: flex; gap: 8px;
+    overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain;
+    padding: 8px 28px 9px; scroll-behavior: auto;
+    scrollbar-width: thin; scrollbar-color: #4f8cff rgba(255,255,255,0.05);
+  }
+  .toc-rail-scroll::-webkit-scrollbar { height: 6px; }
+  .toc-rail-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 6px; }
+  .toc-rail-scroll::-webkit-scrollbar-thumb { background: linear-gradient(90deg, var(--blue), var(--violet)); border-radius: 6px; }
+  .toc-rail-scroll::-webkit-scrollbar-thumb:hover { background: linear-gradient(90deg, var(--cyan), var(--blue)); }
   .toc-chips a {
-    flex-shrink: 0; font-size: 12.8px; color: var(--text-2); text-decoration: none;
-    border: 1px solid var(--card-border); border-radius: 999px; padding: 5px 13px;
-    transition: all 0.2s; background: var(--card);
+    flex: none; display: inline-flex; align-items: center; gap: 8px;
+    min-height: 44px; padding: 0 15px; font-size: 13.5px; white-space: nowrap;
+    color: var(--text-2); text-decoration: none; background: var(--card);
+    border: 1px solid var(--card-border); border-radius: 12px;
+    transition: color .2s, background .2s, border-color .2s, box-shadow .2s;
   }
-  .toc-chips a.active { color: var(--cyan); border-color: rgba(56,225,255,0.4); background: rgba(56,225,255,0.08); }
+  .toc-chips a .n {
+    font-size: 11.5px; font-weight: 700; color: var(--text-3);
+    font-variant-numeric: tabular-nums; transition: color .2s;
+  }
+  .toc-chips a:active { transform: scale(.97); }
+  .toc-chips a.active {
+    color: var(--cyan); border-color: rgba(56,225,255,0.45);
+    background: rgba(56,225,255,0.1); box-shadow: 0 0 0 1px rgba(56,225,255,0.12), 0 6px 18px rgba(56,225,255,0.14);
+  }
+  .toc-chips a.active .n { color: var(--cyan); }
+  .toc-rail-progress { height: 2px; background: rgba(255,255,255,0.06); }
+  .toc-rail-progress i { display: block; height: 100%; width: 0; background: var(--grad); transition: width .18s linear; }
+  /* 锚点落点让开「顶栏 64px + 导轨实测高度」，由 JS 写入 --toc-rail-h */
+  .prose section { scroll-margin-top: calc(72px + var(--toc-rail-h, 96px)); }
   .concept-grid { grid-template-columns: 1fr; }
   .concept-grid--4 { grid-template-columns: repeat(2, 1fr); }
   /* 长命令行内 code 在窄屏可折行（nowrap 会撑出横向滚动） */
   .prose code, .faq-item .faq-body code { white-space: normal; overflow-wrap: anywhere; }
   .nav-links { display: none; }
   .docs-hero { padding: 108px 0 28px; }
+}
+
+/* 短视口（横屏手机等）：顶栏 64 + 导轨 94 曾占 41% 屏高，压缩标题行与触达高度 */
+@media (max-width: 960px) and (max-height: 560px) {
+  .toc-rail-head { padding: 5px 28px 0; }
+  .toc-rail-label { font-size: 10px; letter-spacing: .12em; }
+  .toc-rail-count { font-size: 10.5px; }
+  .toc-rail-count b { font-size: 11.5px; }
+  .toc-rail-scroll { padding: 5px 28px 6px; gap: 6px; }
+  .toc-chips a { min-height: 40px; padding: 0 12px; font-size: 12.8px; gap: 6px; }
+  .toc-chips a .n { font-size: 11px; }
+}
+/* 极窄屏只收内容内边距；负边距必须保持 -28px 跟 .wrap 的 padding 对齐
+   （实测曾误设 -14px，导致 320px 下导轨 left=14/right=306 两侧露出正文）。 */
+@media (max-width: 359px) {
+  .toc-rail-head { padding-left: 14px; padding-right: 14px; }
+  .toc-rail-scroll { padding-left: 14px; padding-right: 14px; }
 }
 
 /* ── 移动端导航：≤960px 桌面链接收起，汉堡菜单接管（原先直接 display:none 无替代入口） ── */
@@ -328,6 +386,11 @@ body.menu-open { overflow: hidden; }
 }
 @media (prefers-reduced-motion: reduce) {
   .mobile-menu, .nav-scrim, .nav-toggle i, .nav-toggle i::before, .nav-toggle i::after { transition-duration: .01ms; }
+  /* 导轨：渐隐/进度/chip 过渡一并降级；正文与导轨滚动改即时（JS 侧取 instant） */
+  .toc-chips::before, .toc-chips::after, .toc-chips a, .toc-chips a .n,
+  .toc-rail-progress i { transition-duration: .01ms; }
+  html { scroll-behavior: auto; }
+  .toc-rail-scroll { scroll-behavior: auto; }
 }
 </style>
 <script async src="https://hm.baidu.com/hm.js?29996cfd597e56a1ebdbda2d2b3e9dd6"></script>
@@ -427,16 +490,23 @@ body.menu-open { overflow: hidden; }
     <a href="#changelog"><span class="num">10</span>更新日志</a>
   </aside>
   <div class="toc-chips" id="toc-chips">
-    <a href="#quickstart">快速上手</a>
-    <a href="#balancer">负载均衡</a>
-    <a href="#security">安全防护</a>
-    <a href="#rulesets">规则库</a>
-    <a href="#certs">免费证书</a>
-    <a href="#cluster">集群管理</a>
-    <a href="#settings">系统设置</a>
-    <a href="#api">API 与自动化</a>
-    <a href="#ops">运维手册</a>
-    <a href="#changelog">更新日志</a>
+    <div class="toc-rail-head">
+      <span class="toc-rail-label">手册目录</span>
+      <span class="toc-rail-count"><b id="toc-rail-cur">01</b> / 10</span>
+    </div>
+    <div class="toc-rail-scroll" id="toc-rail-scroll" aria-label="手册章节">
+      <a href="#quickstart"><span class="n">01</span>快速上手</a>
+      <a href="#balancer"><span class="n">02</span>负载均衡</a>
+      <a href="#security"><span class="n">03</span>安全防护</a>
+      <a href="#rulesets"><span class="n">04</span>规则库</a>
+      <a href="#certs"><span class="n">05</span>免费证书</a>
+      <a href="#cluster"><span class="n">06</span>集群管理</a>
+      <a href="#settings"><span class="n">07</span>系统设置</a>
+      <a href="#api"><span class="n">08</span>API 与自动化</a>
+      <a href="#ops"><span class="n">09</span>运维手册</a>
+      <a href="#changelog"><span class="n">10</span>更新日志</a>
+    </div>
+    <div class="toc-rail-progress" aria-hidden="true"><i id="toc-rail-bar"></i></div>
   </div>
 
   <main class="docs-content prose">
@@ -526,15 +596,19 @@ body.menu-open { overflow: hidden; }
 
   <h3>2.2 上游：多个与权重</h3>
   <p>一条规则可以配多个上游，<b>权重</b>决定各自分到多少流量（如 70/30 灰度）。权重是百分比，保存时面板会帮你换算。某个上游临时下线？把它禁用即可，不用删。</p>
+  <p>每个上游还能单独设<b>回源域名</b>：转发时按它改写 Host（HTTPS 上游同时决定 SNI），一条规则可混合对接多个按域名区分的后端。仅 HTTP 规则支持，只填主机名不带端口；动态 DNS 上游不支持该项。</p>
 
   <h3>2.3 健康检查</h3>
   <p>开启后 Caddy 会主动探测上游，故障的上游自动摘掉、恢复后自动加回。规则列表的「处理流程」弹框里能看到每个上游的实时健康状态（健康 / 异常 / 未知）。</p>
+  <p>可单独指定<b>健康检查域名</b>作为探测请求的 Host。注意主动检查<b>不感知</b>逐上游回源域名——留空时跟随后端域名（若配置）否则用上游地址，按域名严格校验 Host 的后端可能被误摘为不健康。建议设一个所有后端都接受的探测域名，或关闭主动检查改用被动熔断。</p>
 
   <h3>2.4 路径路由</h3>
   <p>同一域名下按路径再分流：<code>/api/</code> 去一组上游，<code>/admin</code> 去另一台。支持精确 / 前缀 / 正则匹配，还能改写上游路径（<code>/api/v1/users</code> → <code>/users</code>）。多条路径规则按顺序排列，上面的优先。</p>
+  <p>路径的<b>响应方式</b>除转发外还有两种：<b>直接返回</b>（不访问上游，直接返回设定状态码与内容）与 <b>301 跳转</b>。这两类路径不经安全链（信任名单 / IP 访问控制 / CC 防护 / 内容防护均不生效），且与认证网关互斥（保存时校验）。</p>
 
   <h3>2.5 超时与高级项</h3>
   <p>连接 / 响应头 / 读取 / 写入 / 空闲超时按默认即可；慢后端（报表、导出）建议单独调大「响应超时」。动态 DNS 上游适合地址会变的场景（按域名解析，定期重解析）。</p>
+  <p>后端用 NTLM 认证（Exchange、旧版 IIS）时开启<b>NTLM 兼容</b>：锁定长连接亲和代理形态，要求负载策略为 Cookie 会话保持，仅 HTTP 规则可用。此类后端建议关闭主动健康检查——探测返回 401 会被误判摘除，被动熔断仍在役。</p>
 
   <h3>2.6 TLS 证书</h3>
   <p>三种来源：<b>ACME 自动签发</b>（第 5 章，最省心）、<b>手动上传</b>（已有证书）、<b>关闭 TLS</b>（仅内网）。绑定后证书的到期时间会直接显示在规则卡片上，快到期会提前提醒。</p>
@@ -930,17 +1004,120 @@ systemctl restart containerd</code></pre>
 </footer>
 
 <script>
-// 目录滚动高亮（IntersectionObserver，零依赖）
-const sections = Array.from(document.querySelectorAll('.prose section[id]'));
-const tocLinks = Array.from(document.querySelectorAll('.toc a, .toc-chips a, .mm-chapters a'));
-const spy = new IntersectionObserver((entries) => {
-  entries.forEach((e) => {
-    if (!e.isIntersecting) return;
-    const id = '#' + e.target.id;
-    tocLinks.forEach((a) => a.classList.toggle('active', a.getAttribute('href') === id));
+/* 目录高亮 + 移动端导轨驱动：当前章跟随、两端渐隐、阅读进度、锚点余量按实测高度 */
+(function () {
+  var sections = Array.prototype.slice.call(document.querySelectorAll('.prose section[id]'));
+  var tocLinks = Array.prototype.slice.call(document.querySelectorAll('.toc a, .toc-chips a, .mm-chapters a'));
+  var box = document.getElementById('toc-chips');
+  var rail = document.getElementById('toc-rail-scroll');
+  var bar = document.getElementById('toc-rail-bar');
+  var cur = document.getElementById('toc-rail-cur');
+  var currentId = '';
+
+  function railHeight() {
+    if (!box || getComputedStyle(box).display === 'none') return 0;
+    return box.getBoundingClientRect().height;
+  }
+  function syncRailVar() {
+    document.documentElement.style.setProperty('--toc-rail-h', Math.round(railHeight()) + 'px');
+  }
+  function updateFades() {
+    if (!box || !rail) return;
+    var max = rail.scrollWidth - rail.clientWidth;
+    box.classList.toggle('can-left', rail.scrollLeft > 2);
+    box.classList.toggle('can-right', max > 2 && rail.scrollLeft < max - 2);
+  }
+  /* 导轨位置的唯一写入者=用户滑动 + 显式点击导航。
+     曾让「页面滚动 → 自动居中当前章」也写 scrollLeft，实测与用户滑动、浏览器
+     原生锚点滚动三方互相覆盖（点 certs 后 scrollLeft 被写回 6，chip 停在视口外，
+     甚至无法点击）。故取消滚动期自动居中：滚动只更新高亮与章号计数，
+     导轨位置交给用户；点击导航时才把目标 chip 定位到可视区中央。 */
+  var navId = '';
+  var navTimer = null;
+  function centerChip(chip) {
+    if (!rail || !chip) return;
+    var max = rail.scrollWidth - rail.clientWidth;
+    var target = Math.max(0, Math.min(max, chip.offsetLeft - (rail.clientWidth - chip.offsetWidth) / 2));
+    rail.scrollLeft = target;
+    updateFades();
+  }
+  function setCurrent(id, force) {
+    if (!id) return;
+    if (!force && navId && id !== navId) return;
+    if (id === currentId && !force) return;
+    currentId = id;
+    tocLinks.forEach(function (a) { a.classList.toggle('active', a.getAttribute('href') === '#' + id); });
+    if (!rail) return;
+    var chip = rail.querySelector('a[href="#' + id + '"]');
+    if (!chip) return;
+    var n = chip.querySelector('.n');
+    if (cur && n) cur.textContent = n.textContent;
+    /* 滚动期只改高亮/计数，不动 scrollLeft——用户浏览位置不被拽回 */
+    if (force) centerChip(chip);
+    updateFades();
+  }
+  function endNav(id) {
+    if (navId !== id) return;
+    navId = '';
+    if (navTimer) { clearTimeout(navTimer); navTimer = null; }
+    syncRailVar();
+    onScroll();
+  }
+  function goTo(id) {
+    var target = document.getElementById(id);
+    if (!target) return false;
+    navId = id;
+    if (navTimer) clearTimeout(navTimer);
+    /* 先定位 chip 再滚正文：目标 chip 立即可见，点击不会落在移动靶上 */
+    setCurrent(id, true);
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    /* scroll-margin-top 已让开顶栏 + 导轨实测高度。
+       降级必须用 instant：'auto' 会沿用 CSS scroll-behavior:smooth，仍是动画，
+       实测 150ms 兜底在滚动途中解锁 → 点 #ops 落到 07。 */
+    target.scrollIntoView({ behavior: reduce ? 'instant' : 'smooth', block: 'start' });
+    history.replaceState(null, '', '#' + id);
+    var finish = function () { window.removeEventListener('scrollend', finish); endNav(id); };
+    window.addEventListener('scrollend', finish, { once: true });
+    /* scrollend 不支持时兜底解锁，避免高亮永久冻结 */
+    navTimer = setTimeout(finish, reduce ? 150 : 1800);
+    return true;
+  }
+  function onScroll() {
+    var offset = 64 + railHeight() + 28;
+    var id = sections.length ? sections[0].id : '';
+    for (var i = 0; i < sections.length; i++) {
+      if (sections[i].getBoundingClientRect().top <= offset) id = sections[i].id; else break;
+    }
+    setCurrent(id);
+    var doc = document.documentElement;
+    var max = doc.scrollHeight - window.innerHeight;
+    var p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+    if (bar) bar.style.width = (p * 100).toFixed(2) + '%';
+    updateFades();
+  }
+  var queued = false;
+  function schedule() {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(function () { queued = false; syncRailVar(); onScroll(); });
+  }
+  window.addEventListener('scroll', schedule, { passive: true });
+  window.addEventListener('resize', schedule);
+  window.addEventListener('hashchange', function () { setTimeout(schedule, 60); });
+  if (rail) rail.addEventListener('scroll', updateFades, { passive: true });
+  /* 导轨滚动只刷新两端渐隐；不注册任何会改写 scrollLeft 的监听 */
+  /* 目录链接统一接管：阻止原生锚点跳转（它会把 chip 滚出视口并覆盖导轨定位） */
+  tocLinks.forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      var href = a.getAttribute('href') || '';
+      if (href.charAt(0) !== '#') return;
+      if (goTo(href.slice(1))) e.preventDefault();
+    });
   });
-}, { rootMargin: '-20% 0px -70% 0px' });
-sections.forEach((s) => spy.observe(s));
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(schedule);
+  syncRailVar();
+  onScroll();
+})();
 </script>
 <script>
 /* 移动端导航：汉堡开关 + 焦点管理 + 遮罩/Esc 关闭 + 视口回升自动收起 */
