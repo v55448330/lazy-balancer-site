@@ -474,7 +474,7 @@ body.menu-open { overflow: hidden; }
   <div class="wrap">
     <div class="kicker">USER MANUAL</div>
     <h1>用户手册 — <em>照着做就能用起来</em></h1>
-    <p>从部署到上线的完整指南：先跑起来，再发第一条规则，然后逐步打开安全防护、证书、集群、通知与自动化。每一节都按「是什么 → 在哪进 → 怎么用 → 注意点」组织，对应面板版本：正式版 v2.4.4（新能力与修复明细见第 11 章更新日志；想抢先体验可参考「测试通道」提示换用测试版标签）。</p>
+    <p>从部署到上线的完整指南：先跑起来，再发第一条规则，然后逐步打开安全防护、证书、集群、通知与自动化。每一节都按「是什么 → 在哪进 → 怎么用 → 注意点」组织，对应面板版本：测试版 v2.4.5-beta（正式版 v2.4.4）（新能力与修复明细见第 11 章更新日志；想抢先体验可参考「测试通道」提示换用测试版标签）。</p>
   </div>
 </header>
 
@@ -831,7 +831,7 @@ body.menu-open { overflow: hidden; }
   <p><b>每日摘要</b>是独立区块，不走事件订阅：按用户配置的投递时间（默认 09:00，按面板时区）推送昨日运营摘要，可勾选包含模块、为每种通道设置渲染格式，并支持「测试发送」——测试与定时日报走同一管线，结果同样进投递记录。</p>
 
   <h3>7.4 事件目录</h3>
-  <p>目录共 <b>71 类事件</b>，是订阅矩阵与默认订阅的唯一事实源。面板订阅界面按六个分组展示（认证 / 配置 / 安全 / 证书 / 集群 / 系统），其中 <code>task.*</code> 与 <code>notify.*</code> 归入「系统」组；为便于查找，下面按语义把任务与通知自监控单独列出。<b>「默认订阅」列只影响没有显式规则的用户</b>，显式规则以用户选择为准。</p>
+  <p>目录共 <b>69 类事件</b>，是订阅矩阵与默认订阅的唯一事实源。面板订阅界面按六个分组展示（认证 / 配置 / 安全 / 证书 / 集群 / 系统），其中 <code>task.*</code> 与 <code>notify.*</code> 归入「系统」组；为便于查找，下面按语义把任务与通知自监控单独列出。<b>「默认订阅」列只影响没有显式规则的用户</b>，显式规则以用户选择为准。</p>
 
   <p><b>认证（14）</b></p>
   <table>
@@ -849,8 +849,8 @@ body.menu-open { overflow: hidden; }
       <tr><td>密码已重置</td><td><code>auth.password_reset</code></td><td>警告</td><td>开</td></tr>
       <tr><td>API 密钥已创建</td><td><code>auth.apikey_created</code></td><td>信息</td><td>关</td></tr>
       <tr><td>API 密钥已删除</td><td><code>auth.apikey_deleted</code></td><td>警告</td><td>开</td></tr>
-      <tr><td>API 密钥状态变更</td><td><code>auth.apikey_toggled</code></td><td>警告</td><td>开</td></tr>
       <tr><td>API 密钥临期</td><td><code>apikey.expiry_warning</code></td><td>警告</td><td>开</td></tr>
+      <tr><td>API 密钥状态变更</td><td><code>auth.apikey_toggled</code></td><td>警告</td><td>开</td></tr>
     </tbody>
   </table>
 
@@ -867,8 +867,8 @@ body.menu-open { overflow: hidden; }
       <tr><td>Caddy 应用恢复</td><td><code>cfg.caddy_recovered</code></td><td>信息</td><td>开</td></tr>
       <tr><td>配置导入完成</td><td><code>cfg.import_done</code></td><td>信息</td><td>关</td></tr>
       <tr><td>配置导入失败</td><td><code>cfg.import_failed</code></td><td>严重</td><td>开</td></tr>
-      <tr><td>备份完成</td><td><code>cfg.backup_done</code></td><td>信息</td><td>关</td></tr>
-      <tr><td>备份失败</td><td><code>cfg.backup_failed</code></td><td>严重</td><td>开</td></tr>
+      <tr><td>自动备份完成</td><td><code>cfg.backup_done</code></td><td>信息</td><td>关</td></tr>
+      <tr><td>自动备份失败</td><td><code>cfg.backup_failed</code></td><td>严重</td><td>开</td></tr>
       <tr><td>还原完成</td><td><code>cfg.restore_done</code></td><td>信息</td><td>关</td></tr>
       <tr><td>还原失败</td><td><code>cfg.restore_failed</code></td><td>严重</td><td>开</td></tr>
       <tr><td>Caddy 服务启停</td><td><code>cfg.caddy_lifecycle</code></td><td>警告</td><td>开</td></tr>
@@ -881,7 +881,7 @@ body.menu-open { overflow: hidden; }
     </tbody>
   </table>
 
-  <p><b>安全（16）</b></p>
+  <p><b>安全（14）</b></p>
   <table>
     <thead><tr><th>事件</th><th>事件 ID</th><th>级别</th><th>默认订阅</th></tr></thead>
     <tbody>
@@ -889,17 +889,15 @@ body.menu-open { overflow: hidden; }
       <tr><td>CC 防护触发</td><td><code>sec.cc_triggered</code></td><td>警告</td><td>开</td></tr>
       <tr><td>自动封禁触发</td><td><code>sec.autoban_triggered</code></td><td>警告</td><td>开</td></tr>
       <tr><td>自动封禁已到期</td><td><code>sec.autoban_expired</code></td><td>信息</td><td>关</td></tr>
+      <tr><td>安全事件摄取降级</td><td><code>sec.ingest_degraded</code></td><td>警告</td><td>开</td></tr>
+      <tr><td>安全事件摄取恢复</td><td><code>sec.ingest_recovered</code></td><td>信息</td><td>开</td></tr>
       <tr><td>安全策略变更</td><td><code>sec.policy_changed</code></td><td>警告</td><td>开</td></tr>
       <tr><td>IP 名单变更</td><td><code>sec.ip_list_changed</code></td><td>信息</td><td>关</td></tr>
       <tr><td>自定义规则变更</td><td><code>sec.custom_rule_changed</code></td><td>信息</td><td>关</td></tr>
       <tr><td>拦截页变更</td><td><code>sec.block_page_changed</code></td><td>信息</td><td>关</td></tr>
       <tr><td>自动封禁配置变更</td><td><code>sec.autoban_config_changed</code></td><td>警告</td><td>开</td></tr>
       <tr><td>MCP 会话断开</td><td><code>sec.mcp_disconnected</code></td><td>警告</td><td>开</td></tr>
-      <tr><td>安全事件摄取降级</td><td><code>sec.ingest_degraded</code></td><td>警告</td><td>开</td></tr>
-      <tr><td>安全事件摄取恢复</td><td><code>sec.ingest_recovered</code></td><td>信息</td><td>开</td></tr>
-      <tr><td>安全库手动更新（已发起）</td><td><code>sec.lib_updated</code></td><td>信息</td><td>关</td></tr>
-      <tr><td>安全库更新成功</td><td><code>sec.lib_update_succeeded</code></td><td>信息</td><td>关</td></tr>
-      <tr><td>安全库更新失败</td><td><code>sec.lib_update_failed</code></td><td>警告</td><td>开</td></tr>
+      <tr><td>规则库更新</td><td><code>sec.lib_updated</code></td><td>信息</td><td>关</td></tr>
       <tr><td>安全库设置变更</td><td><code>sec.lib_settings_changed</code></td><td>信息</td><td>关</td></tr>
     </tbody>
   </table>
@@ -930,37 +928,21 @@ body.menu-open { overflow: hidden; }
     </tbody>
   </table>
 
-  <p><b>系统（3）</b></p>
+  <p><b>系统（9）</b></p>
   <table>
     <thead><tr><th>事件</th><th>事件 ID</th><th>级别</th><th>默认订阅</th></tr></thead>
     <tbody>
       <tr><td>系统启动完成</td><td><code>sys.startup_completed</code></td><td>信息</td><td>关</td></tr>
       <tr><td>系统启动异常</td><td><code>sys.startup_abnormal</code></td><td>严重</td><td>开</td></tr>
-      <tr><td>面板重启请求</td><td><code>sys.restart_requested</code></td><td>警告</td><td>开</td></tr>
-    </tbody>
-  </table>
-
-  <p><b>任务（2，面板中并入「系统」组）</b></p>
-  <table>
-    <thead><tr><th>事件</th><th>事件 ID</th><th>级别</th><th>默认订阅</th></tr></thead>
-    <tbody>
-      <tr><td>定时任务失败</td><td><code>task.failed</code></td><td>警告</td><td>开</td></tr>
-      <tr><td>任务手动操作</td><td><code>task.manual_action</code></td><td>信息</td><td>关</td></tr>
-    </tbody>
-  </table>
-
-  <p><b>通知自监控（4，面板中并入「系统」组）</b></p>
-  <table>
-    <thead><tr><th>事件</th><th>事件 ID</th><th>级别</th><th>默认订阅</th></tr></thead>
-    <tbody>
       <tr><td>通知通道离线</td><td><code>notify.channel_down</code></td><td>警告</td><td>开</td></tr>
       <tr><td>通知通道恢复</td><td><code>notify.channel_recovered</code></td><td>信息</td><td>开</td></tr>
+      <tr><td>定时任务失败</td><td><code>task.failed</code></td><td>警告</td><td>开</td></tr>
+      <tr><td>面板重启请求</td><td><code>sys.restart_requested</code></td><td>警告</td><td>开</td></tr>
+      <tr><td>任务手动操作</td><td><code>task.manual_action</code></td><td>信息</td><td>关</td></tr>
       <tr><td>通知通道变更</td><td><code>notify.channel_changed</code></td><td>信息</td><td>关</td></tr>
       <tr><td>通知规则变更</td><td><code>notify.rule_changed</code></td><td>信息</td><td>关</td></tr>
     </tbody>
   </table>
-  <div class="callout info"><b>日报不在事件目录里。</b>每日摘要作为独立订阅面（per-user 配置 + 直接落投递），不使用事件订阅矩阵；投递记录里保留 <code>sys.daily_report</code> 事件键用于展示与追溯。</div>
-
   <h3>7.5 模板与变量</h3>
   <p>事件消息的模板优先级固定为：</p>
   <div class="callout info"><b>事件 × 通道模板 &gt; 事件模板 &gt; 通道样式模板 &gt; 系统默认。</b>事件级模板一旦命中，就由它<b>独占整条消息的布局</b>：正文按模板渲染，节点行、签名等元素由模板自行组织，通道样式模板不再套用（避免双份标题/正文与转义泄漏）。事件模板只作用于事件消息，不作用于每日摘要。</div>
