@@ -4,15 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>用户手册 — LazyBalancer 负载均衡与安全防护管理平台 V2</title>
-<meta name="description" content="Lazy Balancer V2 用户手册：部署、负载均衡、反向代理、安全防护、规则库、ACME 免费证书自动签发与续签、集群管理、系统设置、API 与自动化、运维 FAQ——一步一步照着做就能用起来。">
-<meta name="keywords" content="负载均衡教程,反向代理配置,ACME 免费证书,免费证书,证书自动续签,WAF 配置,OWASP CRS,Caddy 面板,集群管理,Lazy Balancer 文档">
+<meta name="description" content="Lazy Balancer V2 用户手册：部署、负载均衡、反向代理、安全防护、规则库、ACME 免费证书自动签发与续签、集群管理、通知中心（邮件/Webhook/QQ/微信）、系统设置、API 与自动化、运维 FAQ——一步一步照着做就能用起来。">
+<meta name="keywords" content="负载均衡教程,反向代理配置,ACME 免费证书,免费证书,证书自动续签,WAF 配置,OWASP CRS,Caddy 面板,集群管理,通知中心,告警通知,Lazy Balancer 文档">
 <meta name="robots" content="index,follow">
 <link rel="canonical" href="https://www.lazybalancer.org/docs.html">
 <meta name="theme-color" content="#06070d">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Lazy Balancer">
 <meta property="og:title" content="用户手册 — LazyBalancer 负载均衡与安全防护管理平台 V2">
-<meta property="og:description" content="部署、负载均衡、反向代理、安全防护、规则库、ACME 免费证书自动签发与续签、集群管理、系统设置、API 与自动化、运维 FAQ。">
+<meta property="og:description" content="部署、负载均衡、反向代理、安全防护、规则库、ACME 免费证书自动签发与续签、集群管理、通知中心（邮件/Webhook/QQ/微信）、系统设置、API 与自动化、运维 FAQ。">
 <meta property="og:url" content="https://www.lazybalancer.org/docs.html">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://www.lazybalancer.org/assets/shot-dashboard.webp">
@@ -395,6 +395,7 @@ body.menu-open { overflow: hidden; }
 }
 </style>
 <script async src="https://hm.baidu.com/hm.js?29996cfd597e56a1ebdbda2d2b3e9dd6"></script>
+</head>
 
 <body id="top">
 <div class="bg-orbs"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
@@ -451,10 +452,11 @@ body.menu-open { overflow: hidden; }
     <a href="#rulesets"><span class="mm-num">4</span>规则库</a>
     <a href="#certs"><span class="mm-num">5</span>免费证书</a>
     <a href="#cluster"><span class="mm-num">6</span>集群管理</a>
-    <a href="#settings"><span class="mm-num">7</span>系统设置</a>
-    <a href="#api"><span class="mm-num">8</span>API 与自动化</a>
-    <a href="#ops"><span class="mm-num">9</span>运维手册</a>
-    <a href="#changelog"><span class="mm-num">10</span>更新日志</a>
+    <a href="#notifications"><span class="mm-num">7</span>通知中心</a>
+    <a href="#settings"><span class="mm-num">8</span>系统设置</a>
+    <a href="#api"><span class="mm-num">9</span>API 与自动化</a>
+    <a href="#ops"><span class="mm-num">10</span>运维手册</a>
+    <a href="#changelog"><span class="mm-num">11</span>更新日志</a>
   </nav>
   <div class="mm-cta">
     <a class="nav-cta" href="https://github.com/v55448330/lazy-balancer-v2" target="_blank" rel="noopener">
@@ -472,7 +474,7 @@ body.menu-open { overflow: hidden; }
   <div class="wrap">
     <div class="kicker">USER MANUAL</div>
     <h1>用户手册 — <em>照着做就能用起来</em></h1>
-    <p>从部署到上线的完整指南：先跑起来，再发第一条规则，然后逐步打开安全防护、证书、集群与自动化。每一节都按「是什么 → 在哪进 → 怎么用 → 注意点」组织，对应面板版本：正式版 v2.4.4（新能力与修复明细见第 10 章更新日志；想抢先体验可参考「测试通道」提示换用测试版标签）。</p>
+    <p>从部署到上线的完整指南：先跑起来，再发第一条规则，然后逐步打开安全防护、证书、集群、通知与自动化。每一节都按「是什么 → 在哪进 → 怎么用 → 注意点」组织，对应面板版本：正式版 v2.4.4（新能力与修复明细见第 11 章更新日志；想抢先体验可参考「测试通道」提示换用测试版标签）。</p>
   </div>
 </header>
 
@@ -485,15 +487,16 @@ body.menu-open { overflow: hidden; }
     <a href="#rulesets"><span class="num">4</span>规则库</a>
     <a href="#certs"><span class="num">5</span>免费证书</a>
     <a href="#cluster"><span class="num">6</span>集群管理</a>
-    <a href="#settings"><span class="num">7</span>系统设置</a>
-    <a href="#api"><span class="num">8</span>API 与自动化</a>
-    <a href="#ops"><span class="num">9</span>运维手册</a>
-    <a href="#changelog"><span class="num">10</span>更新日志</a>
+    <a href="#notifications"><span class="num">7</span>通知中心</a>
+    <a href="#settings"><span class="num">8</span>系统设置</a>
+    <a href="#api"><span class="num">9</span>API 与自动化</a>
+    <a href="#ops"><span class="num">10</span>运维手册</a>
+    <a href="#changelog"><span class="num">11</span>更新日志</a>
   </aside>
   <div class="toc-chips" id="toc-chips">
     <div class="toc-rail-head">
       <span class="toc-rail-label">手册目录</span>
-      <span class="toc-rail-count"><b id="toc-rail-cur">01</b> / 10</span>
+      <span class="toc-rail-count"><b id="toc-rail-cur">01</b> / 11</span>
     </div>
     <div class="toc-rail-scroll" id="toc-rail-scroll" aria-label="手册章节">
       <a href="#quickstart"><span class="n">01</span>快速上手</a>
@@ -502,10 +505,11 @@ body.menu-open { overflow: hidden; }
       <a href="#rulesets"><span class="n">04</span>规则库</a>
       <a href="#certs"><span class="n">05</span>免费证书</a>
       <a href="#cluster"><span class="n">06</span>集群管理</a>
-      <a href="#settings"><span class="n">07</span>系统设置</a>
-      <a href="#api"><span class="n">08</span>API 与自动化</a>
-      <a href="#ops"><span class="n">09</span>运维手册</a>
-      <a href="#changelog"><span class="n">10</span>更新日志</a>
+      <a href="#notifications"><span class="n">07</span>通知中心</a>
+      <a href="#settings"><span class="n">08</span>系统设置</a>
+      <a href="#api"><span class="n">09</span>API 与自动化</a>
+      <a href="#ops"><span class="n">10</span>运维手册</a>
+      <a href="#changelog"><span class="n">11</span>更新日志</a>
     </div>
     <div class="toc-rail-progress" aria-hidden="true"><i id="toc-rail-bar"></i></div>
   </div>
@@ -567,7 +571,7 @@ body.menu-open { overflow: hidden; }
   v55448330/lazy-balancer-v2:v2.4.2</code></pre>
   <div class="callout info"><b>端口说明。</b>80/443 是网站流量入口（Caddy），<b>8000 是管理面板</b>（浏览器访问 <code>https://&lt;服务器IP&gt;:8000</code>）。面板默认强制 HTTPS，首次访问接受一下自签证书即可。</div>
   <div class="callout info"><b>旧镜像升级提示。</b>v2.3.8 起的镜像已内置 init 进程与零子进程健康检查，无需额外参数；示例已默认 <code>--pids-limit=4096</code>（cgroup PID 配额，按线程计数）并同时设置 <code>--ulimit nproc=4096:4096</code>（容器内 RLIMIT_NPROC）；两者只作用于容器，宿主系统 ulimit 无需修改。若固定使用更早的镜像，请在启动命令中追加 <code>--init</code>。</div>
-  <div class="callout info"><b>测试通道。</b>想抢先体验新能力，可把镜像 tag 换成测试版通道标签（形如 <code>v55448330/lazy-balancer-v2:vX.Y.Z-beta</code>，历史测试内容见第 10 章更新日志）。测试版变动快，生产环境建议用上面的正式版。</div>
+  <div class="callout info"><b>测试通道。</b>想抢先体验新能力，可把镜像 tag 换成测试版通道标签（形如 <code>v55448330/lazy-balancer-v2:vX.Y.Z-beta</code>，历史测试内容见第 11 章更新日志）。测试版变动快，生产环境建议用上面的正式版。</div>
   <div class="callout info"><b>想要从节点（高可用）？</b>同样的镜像再起一个实例，面板里切换到「从节点」并指向主节点地址（如 <code>http://主节点IP:8000</code>）即可，详见第 6 章。</div>
 
   <h3>1.3 首次登录</h3>
@@ -615,7 +619,7 @@ body.menu-open { overflow: hidden; }
   <p>三种来源：<b>ACME 自动签发</b>（第 5 章，最省心）、<b>手动上传</b>（已有证书）、<b>关闭 TLS</b>（仅内网）。绑定后证书的到期时间会直接显示在规则卡片上，快到期会提前提醒。</p>
 
   <h3>2.7 复制与导入导出</h3>
-  <p>「复制」一键克隆规则微调；整站配置的导出/导入在「系统设置 → 基础设置 → 配置备份」（第 9 章）。</p>
+  <p>「复制」一键克隆规则微调；整站配置的导出/导入在「系统设置 → 基础设置 → 配置备份」（第 10 章）。</p>
 
   <h3>2.8 认证网关</h3>
   <p>规则可开启<b>认证网关</b>：全部请求先发一个 GET 子请求到你的认证服务（已有 SSO、OAuth2 Proxy 或自研鉴权都能直接接），由它决定放行还是拒绝；放行后按<b>身份头清单</b>把网关返回的请求头（如 <code>X-Auth-User</code>）透传给上游，业务侧直接读头识别用户，无需改造代码。</p>
@@ -778,12 +782,244 @@ body.menu-open { overflow: hidden; }
   <p>同步内容：规则与上游、安全策略与名单、用户与 API 密钥、证书任务与材料、全局配置、WAF 规则库文件。默认每 60 秒一次增量（内容没变就走 304 零开销）；从节点数据被带外改动时自动检测漂移并全量自愈。从节点的「最近同步」时间与结果在双方面板都可见。</p>
 </section>
 
-<!-- ═══════════ 7. 系统设置 ═══════════ -->
+<!-- ═══════════ 7. 通知中心 ═══════════ -->
+<section id="notifications">
+  <h2><span class="ch">07</span>通知中心</h2>
+  <p class="sec-sub">「通知中心」菜单。事件发生 → 订阅匹配 → 聚合/抑制 → 通道投递 → 投递留痕，一条消息从产生到送达全程可查。</p>
+
+  <h3>7.1 一条通知的旅程</h3>
+  <div class="steps">
+    <div class="step-card"><b>事件发布</b><p>规则变更、证书签发、安全拦截、集群状态、任务失败等动作发生时，系统按事件目录发布一条事件（级别 + 标题 + 正文 + 结构化字段）。事件先入进程内缓冲队列，队列满时丢弃并计数，<b>绝不阻塞业务动作</b>——事实本身已写入对应业务库，通知只是展示面。</p></div>
+    <div class="step-card"><b>订阅匹配</b><p>按「通知规则」逐用户匹配：该事件是否被订阅、事件级别是否达到规则的最低级别、规则选了哪些启用通道。没有显式规则的用户按目录默认订阅兜底；没有启用通道的用户不会收到任何投递。</p></div>
+    <div class="step-card"><b>聚合与抑制</b><p>高频同类事件先收敛：安全拦截按 5 分钟窗口聚合，同一窗口每个级别最多一条（首发信息级，累计跨过阈值再补警告/严重）；CC 防护与自动封禁按 IP 做 10 分钟抑制/去抖，证书临期每证书每 24 小时最多一条——避免告警风暴把真正重要的消息挤出队列。</p></div>
+    <div class="step-card"><b>通道投递</b><p>投递任务每 10 秒扫描待投递队列，按通道并行发送（同一条消息最多 3 个通道并发），单通道失败自动重试 1 次；仍失败的记入投递记录，可在「投递记录」里按条重发。</p></div>
+    <div class="step-card"><b>投递留痕</b><p>每次外发都落一行「投递记录」：事件、级别、标题/正文、状态（待投递/已投递/部分失败/失败/已过期）、尝试次数、每个通道的结果与错误、耗时。通道测试消息同样留痕，用「测试发送」标记区分。</p></div>
+  </div>
+  <div class="callout info"><b>集群口径。</b>通知的订阅、通道与投递集中在<b>主节点</b>完成；从节点只把本地事件汇聚上报主节点。详见 7.7。</div>
+
+  <h3>7.2 通道配置</h3>
+  <p>「通知中心 → 通道管理」创建接收端。通道属于用户：管理员可管理全部用户的通道，普通用户只管自己的。四种类型：</p>
+  <table>
+    <thead><tr><th>通道</th><th>适用场景</th><th>关键配置</th><th>消息形态</th></tr></thead>
+    <tbody>
+      <tr><td><b>Webhook</b></td><td>接到自建告警平台、IM 群机器人、自动化流程</td><td>URL；POST/GET；自定义请求头；JSON 载荷模板</td><td>JSON（默认七键：level / level_label / time / node / title / body / fields）</td></tr>
+      <tr><td><b>邮件</b></td><td>值班邮箱、邮件组、正式告警留档</td><td>全局 SMTP 凭据；收件邮箱；标题模板；正文格式</td><td>默认精美 HTML 卡片，也可纯文本</td></tr>
+      <tr><td><b>QQ 机器人</b></td><td>QQ 群/私聊即时提醒</td><td>扫码登录机器人；接收者 openid</td><td>Markdown 富文本（需机器人在 QQ 开放平台具备 markdown 权限）</td></tr>
+      <tr><td><b>微信机器人（BETA）</b></td><td>微信群/私聊即时提醒</td><td>扫码登录机器人；接收者 wxid 或群 id；接收者先建立会话</td><td>纯文本（iLink 协议限制，无 Markdown）</td></tr>
+    </tbody>
+  </table>
+
+  <p><b>邮件</b>：先在「通知中心 → 邮件凭据」配置全局 SMTP（服务器、端口、账号、密码/授权码、发件人、TLS）。465 端口走隐式 TLS，其余端口在服务端支持时自动 STARTTLS；自签/过期证书可勾选「忽略证书校验」。凭据页的「发送测试」可直接用当前填写值测试（密码留空沿用已保存值）；<b>配置变动后必须先测试通过才能保存</b>。通道侧只填收件邮箱，标题模板与正文格式在通道的「传输配置」里设置。</p>
+
+  <p><b>Webhook</b>：填 <code>http(s)://</code> URL，请求方式默认 POST；选 GET 时 JSON 载荷经 URL query 参数 <code>payload</code> 传递。自定义请求头最多 8 个，仅允许 <code>Authorization</code>、API Key 头、<code>Content-Type</code>、<code>Accept</code>、<code>User-Agent</code> 与 <code>X-*</code> 自定义头，禁止 <code>Host</code>/<code>Cookie</code> 等；值最长 500 字符且不得含换行。请求超时 10 秒，2xx 视为成功，其余状态码连同响应体片段记入投递记录。</p>
+
+  <p><b>QQ 机器人</b>：点「获取绑定二维码」用手机 QQ 扫码登录机器人账号；连接成功后，在 QQ 内向机器人发送「绑定测试」，机器人回复确认即完成绑定，接收者 openid 会自动回填（也可手动填写）。一个机器人可绑定多个 openid，每个 openid 建一个通道。</p>
+
+  <p><b>微信机器人（BETA）</b>：扫码登录 iLink 机器人后，让目标微信先给机器人发一条消息（或发送「绑定测试」）建立会话，再保存通道。不同接收者（wxid 或群 id）是不同的通道，可建多个。保存时会自动验证送达，失败会提示；连接在线不等于会话就绪，通道卡片会单独显示「会话待刷新」（见 7.8）。</p>
+
+  <p><b>测试与健康状态</b>：通道卡片的「测试」会真实发送一条测试消息，并记录最近测试时间与结果。卡片状态包括<b>就绪</b>、<b>未验证</b>（从未测试）、<b>验证失败</b>（最近测试失败）、<b>已停用</b>、<b>连接离线</b>（QQ/微信长连断开）与<b>会话待刷新</b>（微信上下文过期）。Webhook/邮件是按需短连，没有常驻连接态。</p>
+
+  <h3>7.3 通知规则与默认订阅</h3>
+  <p>「通知中心 → 通知规则」按用户配置接收策略。事件规则按事件目录分组展示，一条规则包含：</p>
+  <ul>
+    <li><b>事件</b>：勾选要订阅的事件；同一分组可整组勾选/取消。全不选 = 取消订阅该组。</li>
+    <li><b>最低级别</b>：信息 = 全部事件；警告 = 仅警告与严重；严重 = 仅严重事件。</li>
+    <li><b>接收通道</b>：勾选投递到哪些启用通道；<b>全不选 = 不投递</b>（规则仍可保持启用，选回通道即恢复）。已停用的通道不可选。</li>
+    <li><b>消息模板</b>：可选地为「每个事件 × 每个通道」单独写模板（见 7.5）。</li>
+  </ul>
+  <p><b>默认订阅</b>：没有为某事件建立显式规则的用户，按事件目录的默认值兜底——<b>警告与严重事件默认开，常规信息事件默认关</b>；少量关键信息事件（Caddy 应用恢复、证书签发成功、拦截聚合、安全事件摄取恢复、通知通道恢复）默认开，保证成对事实与关键闭环不漏。显式规则一旦建立，就以规则为准，不再套用默认值；显式停用或取消全部事件 = 主动退订。</p>
+  <p><b>每日摘要</b>是独立区块，不走事件订阅：按用户配置的投递时间（默认 09:00，按面板时区）推送昨日运营摘要，可勾选包含模块、为每种通道设置渲染格式，并支持「测试发送」——测试与定时日报走同一管线，结果同样进投递记录。</p>
+
+  <h3>7.4 事件目录</h3>
+  <p>目录共 <b>71 类事件</b>，是订阅矩阵与默认订阅的唯一事实源。面板订阅界面按六个分组展示（认证 / 配置 / 安全 / 证书 / 集群 / 系统），其中 <code>task.*</code> 与 <code>notify.*</code> 归入「系统」组；为便于查找，下面按语义把任务与通知自监控单独列出。<b>「默认订阅」列只影响没有显式规则的用户</b>，显式规则以用户选择为准。</p>
+
+  <p><b>认证（14）</b></p>
+  <table>
+    <thead><tr><th>事件</th><th>事件 ID</th><th>级别</th><th>默认订阅</th></tr></thead>
+    <tbody>
+      <tr><td>登录成功</td><td><code>auth.login_success</code></td><td>信息</td><td>关</td></tr>
+      <tr><td>登录失败</td><td><code>auth.login_failed</code></td><td>警告</td><td>开</td></tr>
+      <tr><td>密码已修改</td><td><code>auth.password_changed</code></td><td>警告</td><td>开</td></tr>
+      <tr><td>MFA 配置变更</td><td><code>auth.mfa_changed</code></td><td>警告</td><td>开</td></tr>
+      <tr><td>MFA 验证失败</td><td><code>auth.mfa_verify_failed</code></td><td>警告</td><td>开</td></tr>
+      <tr><td>用户已创建</td><td><code>auth.user_created</code></td><td>警告</td><td>开</td></tr>
+      <tr><td>用户已删除</td><td><code>auth.user_deleted</code></td><td>警告</td><td>开</td></tr>
+      <tr><td>用户状态变更</td><td><code>auth.user_status_changed</code></td><td>警告</td><td>开</td></tr>
+      <tr><td>用户配置变更</td><td><code>auth.user_updated</code></td><td>警告</td><td>开</td></tr>
+      <tr><td>密码已重置</td><td><code>auth.password_reset</code></td><td>警告</td><td>开</td></tr>
+      <tr><td>API 密钥已创建</td><td><code>auth.apikey_created</code></td><td>信息</td><td>关</td></tr>
+      <tr><td>API 密钥已删除</td><td><code>auth.apikey_deleted</code></td><td>警告</td><td>开</td></tr>
+      <tr><td>API 密钥状态变更</td><td><code>auth.apikey_toggled</code></td><td>警告</td><td>开</td></tr>
+      <tr><td>API 密钥临期</td><td><code>apikey.expiry_warning</code></td><td>警告</td><td>开</td></tr>
+    </tbody>
+  </table>
+
+  <p><b>配置（20）</b></p>
+  <table>
+    <thead><tr><th>事件</th><th>事件 ID</th><th>级别</th><th>默认订阅</th></tr></thead>
+    <tbody>
+      <tr><td>负载均衡规则已创建</td><td><code>cfg.rule_created</code></td><td>信息</td><td>关</td></tr>
+      <tr><td>负载均衡规则已修改</td><td><code>cfg.rule_updated</code></td><td>信息</td><td>关</td></tr>
+      <tr><td>负载均衡规则已删除</td><td><code>cfg.rule_deleted</code></td><td>警告</td><td>开</td></tr>
+      <tr><td>负载均衡规则已启停</td><td><code>cfg.rule_toggled</code></td><td>信息</td><td>关</td></tr>
+      <tr><td>全局配置已变更</td><td><code>cfg.global_changed</code></td><td>信息</td><td>关</td></tr>
+      <tr><td>Caddy 应用失败</td><td><code>cfg.caddy_apply_failed</code></td><td>严重</td><td>开</td></tr>
+      <tr><td>Caddy 应用恢复</td><td><code>cfg.caddy_recovered</code></td><td>信息</td><td>开</td></tr>
+      <tr><td>配置导入完成</td><td><code>cfg.import_done</code></td><td>信息</td><td>关</td></tr>
+      <tr><td>配置导入失败</td><td><code>cfg.import_failed</code></td><td>严重</td><td>开</td></tr>
+      <tr><td>备份完成</td><td><code>cfg.backup_done</code></td><td>信息</td><td>关</td></tr>
+      <tr><td>备份失败</td><td><code>cfg.backup_failed</code></td><td>严重</td><td>开</td></tr>
+      <tr><td>还原完成</td><td><code>cfg.restore_done</code></td><td>信息</td><td>关</td></tr>
+      <tr><td>还原失败</td><td><code>cfg.restore_failed</code></td><td>严重</td><td>开</td></tr>
+      <tr><td>Caddy 服务启停</td><td><code>cfg.caddy_lifecycle</code></td><td>警告</td><td>开</td></tr>
+      <tr><td>Admin TLS 配置变更</td><td><code>cfg.admin_tls_changed</code></td><td>信息</td><td>关</td></tr>
+      <tr><td>OIDC 配置变更</td><td><code>cfg.oidc_changed</code></td><td>信息</td><td>关</td></tr>
+      <tr><td>自动备份设置变更</td><td><code>cfg.auto_backup_changed</code></td><td>信息</td><td>关</td></tr>
+      <tr><td>通知设置变更</td><td><code>cfg.notification_changed</code></td><td>信息</td><td>关</td></tr>
+      <tr><td>集群设置变更</td><td><code>cfg.cluster_settings_changed</code></td><td>信息</td><td>关</td></tr>
+      <tr><td>CA 提供商变更</td><td><code>cfg.ca_provider_changed</code></td><td>信息</td><td>关</td></tr>
+    </tbody>
+  </table>
+
+  <p><b>安全（16）</b></p>
+  <table>
+    <thead><tr><th>事件</th><th>事件 ID</th><th>级别</th><th>默认订阅</th></tr></thead>
+    <tbody>
+      <tr><td>拦截聚合</td><td><code>sec.blocked_aggregate</code></td><td>信息</td><td>开</td></tr>
+      <tr><td>CC 防护触发</td><td><code>sec.cc_triggered</code></td><td>警告</td><td>开</td></tr>
+      <tr><td>自动封禁触发</td><td><code>sec.autoban_triggered</code></td><td>警告</td><td>开</td></tr>
+      <tr><td>自动封禁已到期</td><td><code>sec.autoban_expired</code></td><td>信息</td><td>关</td></tr>
+      <tr><td>安全策略变更</td><td><code>sec.policy_changed</code></td><td>警告</td><td>开</td></tr>
+      <tr><td>IP 名单变更</td><td><code>sec.ip_list_changed</code></td><td>信息</td><td>关</td></tr>
+      <tr><td>自定义规则变更</td><td><code>sec.custom_rule_changed</code></td><td>信息</td><td>关</td></tr>
+      <tr><td>拦截页变更</td><td><code>sec.block_page_changed</code></td><td>信息</td><td>关</td></tr>
+      <tr><td>自动封禁配置变更</td><td><code>sec.autoban_config_changed</code></td><td>警告</td><td>开</td></tr>
+      <tr><td>MCP 会话断开</td><td><code>sec.mcp_disconnected</code></td><td>警告</td><td>开</td></tr>
+      <tr><td>安全事件摄取降级</td><td><code>sec.ingest_degraded</code></td><td>警告</td><td>开</td></tr>
+      <tr><td>安全事件摄取恢复</td><td><code>sec.ingest_recovered</code></td><td>信息</td><td>开</td></tr>
+      <tr><td>安全库手动更新（已发起）</td><td><code>sec.lib_updated</code></td><td>信息</td><td>关</td></tr>
+      <tr><td>安全库更新成功</td><td><code>sec.lib_update_succeeded</code></td><td>信息</td><td>关</td></tr>
+      <tr><td>安全库更新失败</td><td><code>sec.lib_update_failed</code></td><td>警告</td><td>开</td></tr>
+      <tr><td>安全库设置变更</td><td><code>sec.lib_settings_changed</code></td><td>信息</td><td>关</td></tr>
+    </tbody>
+  </table>
+
+  <p><b>证书（3）</b></p>
+  <table>
+    <thead><tr><th>事件</th><th>事件 ID</th><th>级别</th><th>默认订阅</th></tr></thead>
+    <tbody>
+      <tr><td>证书签发成功</td><td><code>cert.issued</code></td><td>信息</td><td>开</td></tr>
+      <tr><td>证书签发失败</td><td><code>cert.failed</code></td><td>严重</td><td>开</td></tr>
+      <tr><td>证书临期预警</td><td><code>cert.expiry_warning</code></td><td>警告</td><td>开</td></tr>
+    </tbody>
+  </table>
+
+  <p><b>集群（9）</b></p>
+  <table>
+    <thead><tr><th>事件</th><th>事件 ID</th><th>级别</th><th>默认订阅</th></tr></thead>
+    <tbody>
+      <tr><td>集群节点失联</td><td><code>cluster.offline</code></td><td>严重</td><td>开</td></tr>
+      <tr><td>集群角色翻转</td><td><code>cluster.role_changed</code></td><td>严重</td><td>开</td></tr>
+      <tr><td>集群节点加入</td><td><code>cluster.node_joined</code></td><td>信息</td><td>关</td></tr>
+      <tr><td>集群节点移除</td><td><code>cluster.node_removed</code></td><td>警告</td><td>开</td></tr>
+      <tr><td>集群同步漂移</td><td><code>cluster.sync_drift</code></td><td>警告</td><td>开</td></tr>
+      <tr><td>集群服务控制</td><td><code>cluster.service_control</code></td><td>警告</td><td>开</td></tr>
+      <tr><td>集群登录票据签发</td><td><code>cluster.login_ticket</code></td><td>警告</td><td>开</td></tr>
+      <tr><td>集群节点管理操作</td><td><code>cluster.node_settings_changed</code></td><td>警告</td><td>开</td></tr>
+      <tr><td>集群手动同步</td><td><code>cluster.manual_sync</code></td><td>警告</td><td>开</td></tr>
+    </tbody>
+  </table>
+
+  <p><b>系统（3）</b></p>
+  <table>
+    <thead><tr><th>事件</th><th>事件 ID</th><th>级别</th><th>默认订阅</th></tr></thead>
+    <tbody>
+      <tr><td>系统启动完成</td><td><code>sys.startup_completed</code></td><td>信息</td><td>关</td></tr>
+      <tr><td>系统启动异常</td><td><code>sys.startup_abnormal</code></td><td>严重</td><td>开</td></tr>
+      <tr><td>面板重启请求</td><td><code>sys.restart_requested</code></td><td>警告</td><td>开</td></tr>
+    </tbody>
+  </table>
+
+  <p><b>任务（2，面板中并入「系统」组）</b></p>
+  <table>
+    <thead><tr><th>事件</th><th>事件 ID</th><th>级别</th><th>默认订阅</th></tr></thead>
+    <tbody>
+      <tr><td>定时任务失败</td><td><code>task.failed</code></td><td>警告</td><td>开</td></tr>
+      <tr><td>任务手动操作</td><td><code>task.manual_action</code></td><td>信息</td><td>关</td></tr>
+    </tbody>
+  </table>
+
+  <p><b>通知自监控（4，面板中并入「系统」组）</b></p>
+  <table>
+    <thead><tr><th>事件</th><th>事件 ID</th><th>级别</th><th>默认订阅</th></tr></thead>
+    <tbody>
+      <tr><td>通知通道离线</td><td><code>notify.channel_down</code></td><td>警告</td><td>开</td></tr>
+      <tr><td>通知通道恢复</td><td><code>notify.channel_recovered</code></td><td>信息</td><td>开</td></tr>
+      <tr><td>通知通道变更</td><td><code>notify.channel_changed</code></td><td>信息</td><td>关</td></tr>
+      <tr><td>通知规则变更</td><td><code>notify.rule_changed</code></td><td>信息</td><td>关</td></tr>
+    </tbody>
+  </table>
+  <div class="callout info"><b>日报不在事件目录里。</b>每日摘要作为独立订阅面（per-user 配置 + 直接落投递），不使用事件订阅矩阵；投递记录里保留 <code>sys.daily_report</code> 事件键用于展示与追溯。</div>
+
+  <h3>7.5 模板与变量</h3>
+  <p>事件消息的模板优先级固定为：</p>
+  <div class="callout info"><b>事件 × 通道模板 &gt; 事件模板 &gt; 通道样式模板 &gt; 系统默认。</b>事件级模板一旦命中，就由它<b>独占整条消息的布局</b>：正文按模板渲染，节点行、签名等元素由模板自行组织，通道样式模板不再套用（避免双份标题/正文与转义泄漏）。事件模板只作用于事件消息，不作用于每日摘要。</div>
+  <p>事件模板与通道样式模板支持同一组通用占位符（按需选用）：</p>
+  <table>
+    <thead><tr><th>占位符</th><th>含义</th></tr></thead>
+    <tbody>
+      <tr><td><code>{{title}}</code></td><td>事件标题（目录标题或发布方标题）</td></tr>
+      <tr><td><code>{{body}}</code></td><td>事件正文（目录模板渲染后的文本）</td></tr>
+      <tr><td><code>{{level}}</code></td><td>级别中文：信息 / 警告 / 严重</td></tr>
+      <tr><td><code>{{event}}</code></td><td>事件 ID，如 <code>cert.failed</code></td></tr>
+      <tr><td><code>{{event_title}}</code></td><td>事件可读标题（不含裸事件键）</td></tr>
+      <tr><td><code>{{time}}</code></td><td>时间（<code>YYYY-MM-DD HH:MM</code>）</td></tr>
+      <tr><td><code>{{node}}</code></td><td>发生节点标签（主节点/从节点，含地址）</td></tr>
+      <tr><td><code>{{brand}}</code></td><td>品牌名</td></tr>
+      <tr><td><code>{{date}}</code></td><td>日期（日报模板可用；事件模板的变量面板不提供此变量）</td></tr>
+    </tbody>
+  </table>
+  <p>每日摘要另有日报变量：<code>{{requests}}</code>、<code>{{allowed}}</code>、<code>{{logged}}</code>、<code>{{blocked}}</code>、<code>{{distinct_ips}}</code>、<code>{{bandwidth}}</code>、<code>{{peak_qps}}</code>、<code>{{attack_top}}</code>、<code>{{top_ips}}</code>、<code>{{top_paths}}</code>、<code>{{cc_triggered}}</code>、<code>{{autoban}}</code>、<code>{{cert_status}}</code>、<code>{{cert_expiring}}</code>、<code>{{cluster_status}}</code>、<code>{{nodes_summary}}</code>、<code>{{uptime}}</code>、<code>{{threat_db}}</code>、<code>{{app_version}}</code>、<code>{{api_calls}}</code>、<code>{{mcp_calls}}</code>、<code>{{task_status}}</code>、<code>{{backup_status}}</code>、<code>{{login_status}}</code>。编辑器的变量按钮会插入光标位置，不需要手抄。</p>
+
+  <p><b>通道样式的边界</b>：Webhook 的 <code>payload_template</code> 是 JSON 载荷模板，占位符<b>不要裹引号</b>——运行时按 JSON 字符串编码后嵌入，保存时要求「占位符替换为 probe 后仍是合法 JSON」；邮件支持标题模板（≤300 字符）与正文格式（纯文本 / HTML，正文模板 ≤4000 字符）；QQ 固定 Markdown（需开放平台权限），微信固定纯文本，均不支持自选格式；通道样式里的机器人正文模板 ≤2000 字符。每日摘要另有「渲染模式」：<b>内置模板</b>按勾选模块拼装，<b>自定义模板</b>独占整份版式；选内置模板时，已保存的正文模板会保留但不生效，界面会明确提示。</p>
+
+  <p><b>HTML 与转义纪律</b>：邮件正文格式选 HTML 时，占位符的<b>值</b>会被 HTML 转义（事件正文可能含 IP、UA、规则名等外部输入），模板自身写的 HTML 字面量不转义——因此不要把希望交给「在 HTML 模板里用 <code>{{body}}</code> 插入一段 HTML」，它只会得到转义后的文本；需要结构化排版时用占位符逐项填值。默认事件邮件是统一 HTML 卡片，正文同样先转义再进卡片。Webhook JSON 模板的占位符值由 JSON 编码器转义，引号/换行不会破坏载荷；QQ Markdown 与微信纯文本按原文插入，不做 HTML 转义，也不应把不可信 HTML 直接贴进消息。</p>
+
+  <h3>7.6 聚合、抑制与去重</h3>
+  <ul>
+    <li><b>拦截聚合（5 分钟滚动窗口，按级别降噪）</b>：窗口内第一次拦截发一条信息级通知；累计数达到警告阈值（默认 50）补一条警告级，达到严重阈值（默认 200）补一条严重级（若一次跃迁直接跨到严重，则只补严重级）——同一级别在窗口内最多一条，因此单次拦截只产生一条通知。聚合正文包含实际时间跨度、拦截次数、挑战次数、自动封禁次数与 TOP 3 命中规则（挑战与自动封禁只累加到已开启的窗口，不单独开窗）。窗口结束时按累计对应的级别再检查一次，只有该级别尚未发布才补发（正常不会发生，属于阈值边沿防御）。阈值在窗口开启时快照，下一窗口生效；阈值可经通知设置接口调整，非法值回落内置默认。窗口状态在进程内，重启即开新窗口——事实已在安全事件库，通知只是汇总面。</li>
+    <li><b>CC 与自动封禁的 10 分钟抑制</b>：自动封禁事件发出后，同 IP 的 CC 触发在 10 分钟内不再通知（同一事实的两面：CC 达标随后通常就被封禁）；CC 触发本身按 IP 去抖，同一 IP 10 分钟内只发一条，避免异常 IP 每请求都产生事件、挤掉严重告警。IPv6 按 /64 前缀归一，同段任一地址被封即抑制全段 CC 通知；逐 IP 去抖仍按原始地址，保留不同地址各自的攻击证据。</li>
+    <li><b>登录失败与 MFA 失败（用户|IP 10 分钟去重）</b>：同一用户名 + 同一来源 IP 的重复失败在 10 分钟内只通知一条（登录失败与 MFA 验证失败共用同一个去重键）；「账户已锁定」「账号已禁用」等终态原因不静默、每次可见，且不占用或刷新窗口。请求形态无效与基础设施故障不发布，避免无效请求或故障期把发布队列灌满。</li>
+    <li><b>证书临期</b>：每张证书每 24 小时最多一条预警（续期扫描约 6 小时一轮）；续期成功后到期时间变化视为新证书，可再次预警；证书未变化则在窗口内不重复刷屏。</li>
+    <li><b>通道离线与恢复</b>：QQ/微信长连从在线变为离线时发一条「通知通道离线」，按订阅规则投递给各启用通道（仍可用的通道会正常收到；只绑定了该离线通道的投递会失败留痕）；重连过程中的逐次失败不重复发；真实故障恢复后再发一条成对的「通知通道恢复」。从未上线过的连接失败不发「恢复」。</li>
+    <li><b>投递失败</b>：单通道失败自动重试 1 次；仍失败则整条记为失败/部分失败并留错误，可在投递记录里手动重发。待投递行超过保留期会判「已过期」，不再自动重试。</li>
+  </ul>
+
+  <h3>7.7 集群行为</h3>
+  <ul>
+    <li><b>只有主节点投递</b>：通道、订阅与每日摘要配置都只在主节点生效，投递任务在主节点统一发送。从节点的投递任务只负责事件暂存重传，不做本地投递——避免同一事件在多个节点重复发送、机器人连接互相冲突。</li>
+    <li><b>从节点事件汇聚</b>：从节点发布事件时，若本机不是主节点，会异步把事件（节点名 + 类型 + 级别 + 正文 + 原始发生时刻）推送到主节点的集群事件上报端点；主节点按集群令牌认证、以上报节点身份钉扎节点名，再进入本地通知总线做订阅匹配与投递。主节点不可达时事件落本地暂存目录，短间隔重试重传，不静默丢失。</li>
+    <li><b>上报幂等</b>：重传批次带批次键，主节点按批次键去重（进程内 512 个批次的窗口）；进程重启后窗口重置，因此是「尽力去重」而非严格一次。单批最多 100 条事件。</li>
+    <li><b>节点标签</b>：消息里的 <code>{{node}}</code> 与邮件卡片的「节点」行会显示统一标签——主节点本地事件为「主节点(ip:port)」，从节点事件为「从节点 名称(ip:port)」（名称以主节点认证的节点行为准，地址取自注册上报地址）。标签用于区分同一事件来自哪台机器，不改变事件级别或订阅口径。</li>
+    <li><b>每日摘要</b>：日报只在主节点渲染投递；从节点每日 00:05 上报昨日统计块，主节点日报的「各节点摘要」由此汇总。</li>
+  </ul>
+
+  <h3>7.8 故障排查</h3>
+  <div class="faq-item"><summary>通道显示「连接离线」/「会话待刷新」/「验证失败」/「未验证」？</summary><div class="faq-body"><b>连接离线</b>：QQ/微信长连断开（机器人登录态过期、凭据被替换、连接任务停止或网络不通）。先到「任务监控」确认「通知投递」与机器人连接任务在运行，再点通道「测试」看具体错误；登录态过期时用「重新扫码绑定」。<b>会话待刷新</b>：微信接收者长时间（按 12 小时保守判定）没有给机器人发消息，iLink 会话上下文已过期；让该微信先给机器人发任意一条消息（或「绑定测试」）重建会话，仍不行就重新扫码绑定。<b>验证失败</b>：最近一次测试失败，展开投递记录看通道错误原文。<b>未验证</b>：从未测试过，点「测试」发一条真实消息即可。</div></div>
+  <div class="faq-item"><summary>模板保存了却不生效？</summary><div class="faq-body">先看优先级：<b>事件 × 通道模板 &gt; 事件模板 &gt; 通道样式模板 &gt; 系统默认</b>。只要该事件配置了事件级或事件×通道模板，通道样式模板就不会再套用——这是「事件模板独占布局」的设计，避免双份标题/正文。其次看每日摘要的「渲染模式」：选「内置模板」时，已保存的自定义正文模板保留但不生效，需切到「自定义模板」并保存。Webhook 模板还要求占位符替换后仍是合法 JSON（占位符不要裹引号），保存不通过会直接报错。QQ/微信的格式固定（Markdown/纯文本），不能通过在模板里写 HTML 改变协议形态。</div></div>
+  <div class="faq-item"><summary>测试消息在哪里留痕？</summary><div class="faq-body">「通知中心 → 投递记录」会多出一行 <code>channel.test</code> 事件：标题形如「【测试】通道「名称」」，带「测试发送」标记，状态为已投递或失败，展开可见每个通道的结果与错误。通道卡片同时更新「最近测试时间」与测试状态；管理员的操作日志里也有一条「测试 / 通知通道」审计记录（通道名 + 成功/失败，不含目标 URL）。</div></div>
+  <div class="faq-item"><summary>事件发生了却没收到通知？</summary><div class="faq-body">按顺序核对：①该用户是否有<b>启用的通道</b>（没有通道=无处投递，待投递行会直接判过期）；②规则是否勾选了该事件、是否选了接收通道（全不选=不投递）；③最低级别是否把该事件过滤掉（如设为「严重」时收不到警告）；④该事件是否属于常规信息事件且用户没有显式订阅（默认关）；⑤通道是否离线或会话待刷新；⑥集群环境是否在主节点配置（从节点面板只读，通道/订阅以主节点为准）。</div></div>
+  <div class="faq-item"><summary>投递失败怎么补发？</summary><div class="faq-body">「投递记录」筛「失败/部分失败」，点该行「重发」：全部失败会重投全部订阅通道；部分失败只重发失败通道。重发会重置尝试次数、错误与发送时间并立即唤醒投递循环（平时每 10 秒自动扫描待投递行）。超过保留期的待投递行会判「已过期」，需要重新触发事件或手动重发。</div></div>
+  <div class="faq-item"><summary>QQ/微信绑定后仍不能发？</summary><div class="faq-body">机器人连接成功不等于绑定完成：必须在 QQ/微信里向机器人发送「绑定测试」，收到机器人确认回复后才算建立绑定会话。微信还要求接收者先发过消息（主动发送需要上下文）；不同接收者要分别建通道。保存时系统会验证送达，失败会提示——按提示重试或重新扫码。</div></div>
+
+</section>
+
+<!-- ═══════════ 8. 系统设置 ═══════════ -->
 <section id="settings">
-  <h2><span class="ch">07</span>系统设置</h2>
+  <h2><span class="ch">08</span>系统设置</h2>
   <p class="sec-sub">「系统设置」菜单。基础行为、人、钥匙、账——都在这一组页面里。</p>
 
-  <h3>7.1 基础设置</h3>
+  <h3>8.1 基础设置</h3>
   <p>基础设置页的每一项都在这里：</p>
   <ul>
     <li><b>日志级别</b>：面板自身运行日志的详细程度（Debug/Info/Warning/Error），排查问题临时调 Debug。</li>
@@ -801,18 +1037,18 @@ body.menu-open { overflow: hidden; }
   </ul>
   <figure class="shot"><img src="assets/shot-doc-trustedproxy.webp" alt="受信代理"><figcaption>图 12 · 受信代理——CDN 回源部署的关键开关</figcaption></figure>
 
-  <h3>7.2 用户认证</h3>
+  <h3>8.2 用户认证</h3>
   <p><b>用户与角色</b>：管理员全权；普通用户全局只读 + 自助（改自己密码/显示名、管自己的 MFA 和 API Key）。<b>MFA（TOTP）</b>：验证器 App 扫码绑定，另有 10 枚一次性恢复码；「MFA 写操作验证」开启后，敏感写操作需再输一次验证码。<b>OIDC 单点登录</b>：接企业认证服务（Keycloak/Authentik 等），自动开户，本地账号始终保留兜底。</p>
   <figure class="shot"><img src="assets/shot-users.webp" alt="用户认证"><figcaption>图 13 · 用户与 MFA 管理</figcaption></figure>
 
-  <h3>7.3 API 密钥</h3>
+  <h3>8.3 API 密钥</h3>
   <p>给脚本和 Agent 用的长期凭证（<code>lb_sk_</code> 前缀）：<b>读写 / 只读</b>两种权限，可配 <b>IP 白名单</b>，可单独开关 <b>MCP 功能</b>。只读 Key 没有任何写面（含导出/下载备份），泄露风险最小化——自动化场景优先发只读 Key。密钥只显示一次，请立即保存。</p>
 
-  <h3>7.4 操作日志</h3>
+  <h3>8.4 操作日志</h3>
   <p>所有配置变更都有审计：谁、什么时候、改了什么、结果如何、来源 IP。按人/动作/对象/时间筛选，是回溯「谁动了我的配置」的唯一入口。</p>
   <figure class="shot"><img src="assets/shot-auditlog.webp" alt="操作日志"><figcaption>图 14 · 操作日志</figcaption></figure>
 
-  <h3>7.5 任务监控</h3>
+  <h3>8.5 任务监控</h3>
   <p>「系统设置 → 任务监控」是全部后台任务的控制台，每个任务按四种类型管理：<b>定时</b>（按你配置的排程槽执行——规则库更新、自动备份）、<b>常驻</b>（随系统启动持续运行——安全事件采集、证书签发、集群同步）、<b>循环</b>（固定间隔轮询——配置看门狗、证书扫描、日志清理）、<b>触发</b>（仅手动执行）。</p>
   <ul>
     <li><b>调度开关</b>：定时/循环任务可暂停与恢复调度；常驻任务可停止与启用（停止前有确认提示）；触发类不可调度。</li>
@@ -821,24 +1057,24 @@ body.menu-open { overflow: hidden; }
     <li><b>业务开关联动</b>：规则库自动更新或自动备份关闭时，对应任务显示「已暂停」——两层开关独立，互不干扰。</li>
   </ul>
 
-  <h3>7.6 界面语言</h3>
+  <h3>8.6 界面语言</h3>
   <p>面板支持<b>中文 / English</b> 一键切换（面板右上角）。面板、安全策略、证书任务、备份与操作提示全量翻译；切换只影响显示，不改写库内配置——多语言团队可各用各的界面语言。</p>
 
-  <h3>7.7 连接监控</h3>
+  <h3>8.7 连接监控</h3>
   <p>「仪表盘 → 连接监控」弹框查看实时流量：<b>活跃 / 待关闭 / 已关闭 / 全部</b>四分类切换（默认活跃）。<b>请求视图</b>逐条列出时间、客户端（悬停看归属地）、方法、域名、路径、状态码、耗时、状态、协议、HTTP 版本、命中规则与 UA；<b>连接视图</b>列出协议、本地地址、远端地址（含归属地）与连接状态。顶部给出各状态计数与总请求数，可按域名聚合翻页。默认 2 秒自动刷新，可关闭改手动刷新，支持分页。</p>
 </section>
 
-<!-- ═══════════ 8. API 与自动化 ═══════════ -->
+<!-- ═══════════ 9. API 与自动化 ═══════════ -->
 <section id="api">
-  <h2><span class="ch">08</span>API 与自动化</h2>
+  <h2><span class="ch">09</span>API 与自动化</h2>
   <p class="sec-sub">面板能做的，API 都能做——两条路：REST 直接调，或让 AI Agent 经 MCP 调。</p>
 
-  <h3>8.1 REST API</h3>
+  <h3>9.1 REST API</h3>
   <p>全部能力暴露在 <code>/api/v1</code> 下，认证用登录令牌（<code>Authorization: Bearer &lt;JWT&gt;</code>）或 API Key。面板内置在线文档 <code>/api/v1/docs</code>（Swagger UI，需登录后访问，规格文件 <code>/api/v1/openapi.yaml</code> 同样需认证）——每个端点的参数、示例、错误码都在里面。</p>
   <pre><code>curl -sk https://127.0.0.1:8000/api/v1/rules \
   -H "Authorization: Bearer lb_sk_..."</code></pre>
 
-  <h3>8.2 用 API 给规则换证书（手动上传）</h3>
+  <h3>9.2 用 API 给规则换证书（手动上传）</h3>
   <p>已有现成证书（不是自动签发）时，一个请求即可完成更换，适合从自己的签发流程（如内部 CA、证书服务商 API）自动续期：</p>
   <pre><code>curl -sk -X PUT https://127.0.0.1:8000/api/v1/rules/123 \
     -H "Authorization: Bearer lb_sk_..." \
@@ -855,21 +1091,21 @@ body.menu-open { overflow: hidden; }
     <li>从自动签发切换到手动（或反向），同样改 <code>tls_source</code> 即可，旧签发任务自动清理。</li>
   </ul>
 
-  <h3>8.3 MCP（AI Agent 接入）</h3>
+  <h3>9.3 MCP（AI Agent 接入）</h3>
   <p>面板内置 MCP 服务（<code>POST /api/v1/mcp</code>），注册 <b>136 个工具</b>：规则、策略、证书、集群、审计、诊断全覆盖。给 Agent 发一把开了 MCP 的 API Key（建议只读+IP 白名单），Claude Code / Cursor 等客户端即可直接运维你的负载均衡。配套运维手册（playbook）随服务下发，Agent 拿到就知道怎么按正确顺序操作。</p>
   <div class="callout info"><b>注意。</b>MCP 工具的可见性跟随 Key 的权限：只读 Key 只能看到和使用只读工具；写操作与导出类能力需要读写 Key。</div>
 </section>
 
-<!-- ═══════════ 9. 运维手册 ═══════════ -->
+<!-- ═══════════ 10. 运维手册 ═══════════ -->
 <section id="ops">
-  <h2><span class="ch">09</span>运维手册</h2>
+  <h2><span class="ch">10</span>运维手册</h2>
   <p class="sec-sub">升级、备份、日志与常见问题的参考答案。</p>
 
-  <h3>9.1 升级</h3>
+  <h3>10.1 升级</h3>
   <pre><code>docker compose pull && docker compose up -d</code></pre>
   <p>配置与数据都在卷里，升级零迁移。覆盖重发同版本号时（latest 或同 tag），<code>docker pull</code> 后重建即可。</p>
 
-  <h3>9.2 数据与备份</h3>
+  <h3>10.2 数据与备份</h3>
   <ul>
     <li><b>数据在哪</b>：<code>lb-data</code> 卷（SQLite 主库/指标库/审计库 + JWT 密钥），<code>logs/certs/waf/backup</code> 目录。</li>
     <li><b>自动备份</b>：「系统设置 → 自动备份」按天/周/月定时落盘到 <code>backup/</code>，保留份数可调，一键还原。</li>
@@ -877,10 +1113,10 @@ body.menu-open { overflow: hidden; }
   </ul>
   <div class="callout danger"><b>备份文件含明文私钥与凭证。</b>下载后请加密保管，不要进公开网盘/群文件。</div>
 
-  <h3>9.3 日志在哪</h3>
+  <h3>10.3 日志在哪</h3>
   <p>容器内 <code>/app/logs</code>（映射到宿主 <code>./logs</code>）：应用运行、Caddy 访问与运行、WAF 审计、证书任务、规则库更新、集群同步——每类都有大小轮转，面板内也能直接查看大部分日志。</p>
 
-  <h3>9.4 容量与性能建议</h3>
+  <h3>10.4 容量与性能建议</h3>
   <ul>
     <li><b>CPU</b>：转发本身很轻（单核可承载数千请求/秒），真正的开销在 WAF——全量 OWASP 规则检查每个请求约 0.1-1 毫秒 CPU。经验公式：<b>建议核数 ≈ 2 +（经过全量 WAF 检查的每秒请求数 ÷ 2000）</b>。例如 5000 rps 全量过 WAF 给 4-5 核；先用 CC 防护/黑名单把恶意流量挡在 WAF 之前，2-3 核就够。</li>
     <li><b>省钱技巧</b>：把便宜的安全层放在前面——信任名单零开销直通、IP 黑名单与 CC 防护在 WAF 之前生效（阶段流水线设计）；只跑自定义规则（不启用 CRS）时 WAF 开销降一两个量级。</li>
@@ -892,7 +1128,7 @@ body.menu-open { overflow: hidden; }
     <li><b>2 核 2G 参考</b>：带 WAF 的常规承载约 300–800 请求/秒；大屏光流会抢占客户端与少量服务端资源，优先保留自适应或关闭。</li>
   </ul>
 
-    <h3>9.5 Linux 系统优化（可选）</h3>
+    <h3>10.5 Linux 系统优化（可选）</h3>
   <p>默认配置即可稳定运行；高并发（数千 rps 以上）或长连接较多时，按发行版执行对应方案。以 root 身份操作。</p>
 
   <h4>Ubuntu 22.04 / 24.04（Docker）</h4>
@@ -954,7 +1190,7 @@ systemctl restart containerd</code></pre>
 
   <div class="callout info"><b>说明</b>：内核参数三套完全一致；文件描述符对 systemd 管理的 Docker/containerd 用上述 override（<code>/etc/security/limits.conf</code> 只对登录会话生效）。SELinux 保持默认 Enforcing，挂载权限问题时给卷加 <code>:z</code> 标签（如 <code>-v /data:/app/data:z</code>）而非关闭 SELinux。<b>不要设置 <code>tcp_tw_recycle</code></b>（内核 4.12 已移除该参数）。千级 rps 以下无需任何调整。</div>
 
-<h3>9.6 常见问题</h3>
+<h3>10.6 常见问题</h3>
   <div class="faq-item"><summary>忘记管理员密码怎么办？</summary><div class="faq-body">在数据库里重置：进入容器 <code>docker exec -it lazy-balancer sh</code>，用 sqlite3 把 users 表管理员行删除（<code>DELETE FROM users WHERE username='admin';</code>）后重启容器，面板会重新走「首次创建管理员」流程。操作前请先备份数据卷。</div></div>
   <div class="faq-item"><summary>规则库卡片亮红「缺失/未安装」？</summary><div class="faq-body">说明规则文件缺失或损坏，安全链已按设计整体停渲染（不是误报）。到对应更新弹框点「立即更新」重新下载；持续失败看更新日志里的具体原因（通常是网络——配好 GitHub 加速代理）。</div></div>
   <div class="faq-item"><summary>自动更新失败会怎样？</summary><div class="faq-body">已安装的版本继续服役（防护不受影响），任务按 1h→2h→4h→8h→24h 退避重试，连续失败会在卡片与操作日志可见。网络恢复后自动回到排程节奏。</div></div>
@@ -962,9 +1198,9 @@ systemctl restart containerd</code></pre>
   <div class="faq-item"><summary>证书签发失败常见原因？</summary><div class="faq-body">九成是 DNS 凭证问题：密钥权限不足（需要域名解析读写）、域名不在该账号下、或 API 临时故障。先看任务详情里的错误原文；其次是 CA 频率限制——等待冷却自动重试即可，不要反复手动重试。</div></div>
 </section>
 
-<!-- ═══════════ 10. 更新日志 ═══════════ -->
+<!-- ═══════════ 11. 更新日志 ═══════════ -->
 <section id="changelog">
-  <h2><span class="ch">10</span>更新日志</h2>
+  <h2><span class="ch">11</span>更新日志</h2>
   <p class="sec-sub">每个版本改了什么、为什么值得升级——最新的在最前面。</p>
 
   <div id="changelog-list"><p class="sec-sub">加载中…</p></div>
