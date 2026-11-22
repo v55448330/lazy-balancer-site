@@ -791,7 +791,7 @@ body.menu-open { overflow: hidden; }
   <div class="steps">
     <div class="step-card"><b>事件发布</b><p>规则变更、证书签发、安全拦截、集群状态、任务失败等动作发生时，系统按事件目录发布一条事件（级别 + 标题 + 正文 + 结构化字段）。事件先入进程内缓冲队列，队列满时丢弃并计数，<b>绝不阻塞业务动作</b>——事实本身已写入对应业务库，通知只是展示面。</p></div>
     <div class="step-card"><b>订阅匹配</b><p>按「通知规则」逐用户匹配：该事件是否被订阅、事件级别是否达到规则的最低级别、规则选了哪些启用通道。没有显式规则的用户按目录默认订阅兜底；没有启用通道的用户不会收到任何投递。</p></div>
-    <div class="step-card"><b>聚合与抑制</b><p>高频同类事件先收敛：安全拦截按 5 分钟窗口聚合，同一窗口每个级别最多一条（首发信息级，累计跨过阈值再补警告/严重）；CC 防护与自动封禁按 IP 做 10 分钟抑制/去抖，证书临期每证书每 24 小时最多一条——避免告警风暴把真正重要的消息挤出队列。</p></div>
+    <div class="step-card"><b>聚合与抑制</b><p>高频同类事件先收敛：安全拦截按 5 分钟窗口聚合，达到 10 次才提醒，同一窗口每个级别最多一条（达到 50/200 次再补警告/严重）；CC 防护与自动封禁按 IP 做 10 分钟抑制/去抖，证书临期每证书每 24 小时最多一条——避免告警风暴把真正重要的消息挤出队列。</p></div>
     <div class="step-card"><b>通道投递</b><p>投递任务每 10 秒扫描待投递队列，按通道并行发送（同一条消息最多 3 个通道并发），单通道失败自动重试 1 次；仍失败的记入投递记录，可在「投递记录」里按条重发。</p></div>
     <div class="step-card"><b>投递留痕</b><p>每次外发都落一行「投递记录」：事件、级别、标题/正文、状态（待投递/已投递/部分失败/失败/已过期）、尝试次数、每个通道的结果与错误、耗时。通道测试消息同样留痕，用「测试发送」标记区分。</p></div>
   </div>
@@ -827,11 +827,11 @@ body.menu-open { overflow: hidden; }
     <li><b>接收通道</b>：勾选投递到哪些启用通道；<b>全不选 = 不投递</b>（规则仍可保持启用，选回通道即恢复）。已停用的通道不可选。</li>
     <li><b>消息模板</b>：可选地为「每个事件 × 每个通道」单独写模板（见 7.5）。</li>
   </ul>
-  <p><b>默认订阅</b>：没有为某事件建立显式规则的用户，按事件目录的默认值兜底——<b>警告与严重事件默认开，常规信息事件默认关</b>；少量关键信息事件（Caddy 应用恢复、证书签发成功、拦截聚合、安全事件摄取恢复、通知通道恢复）默认开，保证成对事实与关键闭环不漏。显式规则一旦建立，就以规则为准，不再套用默认值；显式停用或取消全部事件 = 主动退订。</p>
+  <p><b>默认订阅</b>：没有为某事件建立显式规则的用户，按事件目录的默认值兜底——<b>警告与严重事件默认开，常规信息事件默认关</b>；少量关键信息事件（Caddy 配置恢复、拦截聚合、封禁风暴、安全事件摄取恢复、通知通道恢复）默认开，保证成对事实与关键闭环不漏。显式规则一旦建立，就以规则为准，不再套用默认值；显式停用或取消全部事件 = 主动退订。</p>
   <p><b>每日摘要</b>是独立区块，不走事件订阅：按用户配置的投递时间（默认 09:00，按面板时区）推送昨日运营摘要，可勾选包含模块、为每种通道设置渲染格式，并支持「测试发送」——测试与定时日报走同一管线，结果同样进投递记录。</p>
 
   <h3>7.4 事件目录</h3>
-  <p>目录共 <b>68 类事件</b>，是订阅矩阵与默认订阅的唯一事实源。面板订阅界面按六个分组展示（认证 / 配置 / 安全 / 证书 / 集群 / 系统），其中 <code>task.*</code> 与 <code>notify.*</code> 归入「系统」组；为便于查找，下面按语义把任务与通知自监控单独列出。<b>「默认订阅」列只影响没有显式规则的用户</b>，显式规则以用户选择为准。</p>
+  <p>目录共 <b>70 类事件</b>，是订阅矩阵与默认订阅的唯一事实源。面板订阅界面按八个分组展示（认证 / 配置 / 安全 / 证书 / 集群 / 任务 / 通知 / 系统）；Caddy 服务启停归入系统，任务与通知自监控各自成组。<b>「默认订阅」列只影响没有显式规则的用户</b>，显式规则以用户选择为准。事件标题与说明均随界面语言切换（中文/英文），说明口径与后端事件目录一致。</p>
 
   <p><b>认证（14）</b></p>
   <table>
@@ -854,7 +854,7 @@ body.menu-open { overflow: hidden; }
     </tbody>
   </table>
 
-  <p><b>配置（18）</b></p>
+  <p><b>配置（17）</b></p>
   <table>
     <thead><tr><th>事件</th><th>事件 ID</th><th>级别</th><th>默认订阅</th></tr></thead>
     <tbody>
@@ -871,7 +871,6 @@ body.menu-open { overflow: hidden; }
       <tr><td>自动备份失败</td><td><code>cfg.backup_failed</code></td><td>严重</td><td>开</td></tr>
       <tr><td>还原完成</td><td><code>cfg.restore_done</code></td><td>信息</td><td>关</td></tr>
       <tr><td>还原失败</td><td><code>cfg.restore_failed</code></td><td>严重</td><td>开</td></tr>
-      <tr><td>Caddy 服务启停</td><td><code>cfg.caddy_lifecycle</code></td><td>警告</td><td>开</td></tr>
       <tr><td>OIDC 配置变更</td><td><code>cfg.oidc_changed</code></td><td>信息</td><td>关</td></tr>
       <tr><td>自动备份设置变更</td><td><code>cfg.auto_backup_changed</code></td><td>信息</td><td>关</td></tr>
       <tr><td>通知设置变更</td><td><code>cfg.notification_changed</code></td><td>信息</td><td>关</td></tr>
@@ -879,13 +878,15 @@ body.menu-open { overflow: hidden; }
     </tbody>
   </table>
 
-  <p><b>安全（14）</b></p>
+  <p><b>安全（16）</b></p>
   <table>
     <thead><tr><th>事件</th><th>事件 ID</th><th>级别</th><th>默认订阅</th></tr></thead>
     <tbody>
       <tr><td>拦截聚合</td><td><code>sec.blocked_aggregate</code></td><td>信息</td><td>开</td></tr>
+      <tr><td>挑战统计</td><td><code>sec.challenge_summary</code></td><td>警告</td><td>关</td></tr>
       <tr><td>CC 防护触发</td><td><code>sec.cc_triggered</code></td><td>警告</td><td>开</td></tr>
       <tr><td>自动封禁触发</td><td><code>sec.autoban_triggered</code></td><td>警告</td><td>开</td></tr>
+      <tr><td>封禁风暴</td><td><code>sec.autoban_summary</code></td><td>警告</td><td>开</td></tr>
       <tr><td>自动封禁已到期</td><td><code>sec.autoban_expired</code></td><td>信息</td><td>关</td></tr>
       <tr><td>安全事件摄取降级</td><td><code>sec.ingest_degraded</code></td><td>警告</td><td>开</td></tr>
       <tr><td>安全事件摄取恢复</td><td><code>sec.ingest_recovered</code></td><td>信息</td><td>开</td></tr>
@@ -904,7 +905,7 @@ body.menu-open { overflow: hidden; }
   <table>
     <thead><tr><th>事件</th><th>事件 ID</th><th>级别</th><th>默认订阅</th></tr></thead>
     <tbody>
-      <tr><td>证书签发成功</td><td><code>cert.issued</code></td><td>信息</td><td>开</td></tr>
+      <tr><td>证书签发成功</td><td><code>cert.issued</code></td><td>信息</td><td>关</td></tr>
       <tr><td>证书签发失败</td><td><code>cert.failed</code></td><td>严重</td><td>开</td></tr>
       <tr><td>证书临期预警</td><td><code>cert.expiry_warning</code></td><td>警告</td><td>开</td></tr>
       <tr><td>免费证书配置变更</td><td><code>cert.config_changed</code></td><td>信息</td><td>关</td></tr>
@@ -927,21 +928,37 @@ body.menu-open { overflow: hidden; }
     </tbody>
   </table>
 
-  <p><b>系统（9）</b></p>
+  <p><b>任务（2）</b></p>
+  <table>
+    <thead><tr><th>事件</th><th>事件 ID</th><th>级别</th><th>默认订阅</th></tr></thead>
+    <tbody>
+      <tr><td>定时任务失败</td><td><code>task.failed</code></td><td>警告</td><td>开</td></tr>
+      <tr><td>任务手动操作</td><td><code>task.manual_action</code></td><td>信息</td><td>关</td></tr>
+    </tbody>
+  </table>
+
+  <p><b>通知（4）</b></p>
+  <table>
+    <thead><tr><th>事件</th><th>事件 ID</th><th>级别</th><th>默认订阅</th></tr></thead>
+    <tbody>
+      <tr><td>通知通道离线</td><td><code>notify.channel_down</code></td><td>警告</td><td>开</td></tr>
+      <tr><td>通知通道恢复</td><td><code>notify.channel_recovered</code></td><td>信息</td><td>开</td></tr>
+      <tr><td>通知通道变更</td><td><code>notify.channel_changed</code></td><td>信息</td><td>关</td></tr>
+      <tr><td>通知规则变更</td><td><code>notify.rule_changed</code></td><td>信息</td><td>关</td></tr>
+    </tbody>
+  </table>
+
+  <p><b>系统（4）</b></p>
   <table>
     <thead><tr><th>事件</th><th>事件 ID</th><th>级别</th><th>默认订阅</th></tr></thead>
     <tbody>
       <tr><td>系统启动完成</td><td><code>sys.startup_completed</code></td><td>信息</td><td>关</td></tr>
       <tr><td>系统启动异常</td><td><code>sys.startup_abnormal</code></td><td>严重</td><td>开</td></tr>
-      <tr><td>通知通道离线</td><td><code>notify.channel_down</code></td><td>警告</td><td>开</td></tr>
-      <tr><td>通知通道恢复</td><td><code>notify.channel_recovered</code></td><td>信息</td><td>开</td></tr>
-      <tr><td>定时任务失败</td><td><code>task.failed</code></td><td>警告</td><td>开</td></tr>
+      <tr><td>Caddy 服务启停</td><td><code>cfg.caddy_lifecycle</code></td><td>警告</td><td>开</td></tr>
       <tr><td>面板重启请求</td><td><code>sys.restart_requested</code></td><td>警告</td><td>开</td></tr>
-      <tr><td>任务手动操作</td><td><code>task.manual_action</code></td><td>信息</td><td>关</td></tr>
-      <tr><td>通知通道变更</td><td><code>notify.channel_changed</code></td><td>信息</td><td>关</td></tr>
-      <tr><td>通知规则变更</td><td><code>notify.rule_changed</code></td><td>信息</td><td>关</td></tr>
     </tbody>
   </table>
+
   <h3>7.5 模板与变量</h3>
   <p>事件消息的模板优先级固定为：</p>
   <div class="callout info"><b>事件 × 通道模板 &gt; 事件模板 &gt; 通道样式模板 &gt; 系统默认。</b>事件级模板一旦命中，就由它<b>独占整条消息的布局</b>：正文按模板渲染，节点行、签名等元素由模板自行组织，通道样式模板不再套用（避免双份标题/正文与转义泄漏）。事件模板只作用于事件消息，不作用于每日摘要。</div>
@@ -968,10 +985,11 @@ body.menu-open { overflow: hidden; }
 
   <h3>7.6 聚合、抑制与去重</h3>
   <ul>
-    <li><b>拦截聚合（5 分钟滚动窗口，按级别降噪）</b>：窗口内第一次拦截发一条信息级通知；累计数达到警告阈值（默认 50）补一条警告级，达到严重阈值（默认 200）补一条严重级（若一次跃迁直接跨到严重，则只补严重级）——同一级别在窗口内最多一条，因此单次拦截只产生一条通知。聚合正文包含实际时间跨度、拦截次数、挑战次数、自动封禁次数与 TOP 3 命中规则（挑战与自动封禁只累加到已开启的窗口，不单独开窗）。窗口结束时按累计对应的级别再检查一次，只有该级别尚未发布才补发（正常不会发生，属于阈值边沿防御）。阈值在窗口开启时快照，下一窗口生效；阈值可经通知设置接口调整，非法值回落内置默认。窗口状态在进程内，重启即开新窗口——事实已在安全事件库，通知只是汇总面。</li>
-    <li><b>CC 与自动封禁的 10 分钟抑制</b>：自动封禁事件发出后，同 IP 的 CC 触发在 10 分钟内不再通知（同一事实的两面：CC 达标随后通常就被封禁）；CC 触发本身按 IP 去抖，同一 IP 10 分钟内只发一条，避免异常 IP 每请求都产生事件、挤掉严重告警。IPv6 按 /64 前缀归一，同段任一地址被封即抑制全段 CC 通知；逐 IP 去抖仍按原始地址，保留不同地址各自的攻击证据。</li>
-    <li><b>登录失败与 MFA 失败（用户|IP 10 分钟去重）</b>：同一用户名 + 同一来源 IP 的重复失败在 10 分钟内只通知一条（登录失败与 MFA 验证失败共用同一个去重键）；「账户已锁定」「账号已禁用」等终态原因不静默、每次可见，且不占用或刷新窗口。请求形态无效与基础设施故障不发布，避免无效请求或故障期把发布队列灌满。</li>
+    <li><b>拦截聚合（5 分钟滚动窗口，最低阈值 10 次）</b>：窗口内累计达到 10 次才发一条信息级通知；达到警告阈值（默认 50）补一条警告级，达到严重阈值（默认 200）补一条严重级（若一次跃迁直接跨到严重，则只补严重级）——同一级别在窗口内最多一条，低于 10 次的零星拦截不通知。聚合正文包含实际时间跨度、拦截次数、挑战次数、自动封禁次数、TOP 3 命中规则、TOP IP 与 TOP 路径。窗口结束时按累计对应的级别再检查一次，只有该级别尚未发布才补发。阈值在窗口开启时快照，下一窗口生效。</li>
+    <li><b>CC 与自动封禁的抑制/合并</b>：自动封禁事件发出后，同 IP 的 CC 触发在 10 分钟内不再通知；CC 触发本身按 IP 去抖，同一 IP 10 分钟内只发一条。5 分钟内自动封禁达到 5 个 IP 时，从第 5 个起合并为一条「封禁风暴」摘要，不再逐 IP 刷屏。IPv6 按 /64 前缀归一，同段任一地址被封即抑制全段 CC 通知。</li>
+    <li><b>登录失败与 MFA 失败（用户|IP 10 分钟最低 5 次）</b>：同一用户名 + 同一来源 IP 在 10 分钟内累计失败 5 次才通知一条，之后窗口内静默（登录失败与 MFA 验证失败共用同一个计数键）；「账户已锁定」「账号已禁用」等终态原因立即通知、每次可见，且不占用或刷新计数窗口。请求形态无效与基础设施故障不发布。</li>
     <li><b>证书临期</b>：每张证书每 24 小时最多一条预警（续期扫描约 6 小时一轮）；续期成功后到期时间变化视为新证书，可再次预警；证书未变化则在窗口内不重复刷屏。</li>
+    <li><b>挑战统计</b>：5 分钟内人机挑战达到 50 次时发一条「挑战统计」（含 TOP 原因/IP）；该事件默认关，需要时在规则里开启，适合只开挑战、没有拦截流量的场景。</li>
     <li><b>通道离线与恢复</b>：QQ/微信长连从在线变为离线时发一条「通知通道离线」，按订阅规则投递给各启用通道（仍可用的通道会正常收到；只绑定了该离线通道的投递会失败留痕）；重连过程中的逐次失败不重复发；真实故障恢复后再发一条成对的「通知通道恢复」。从未上线过的连接失败不发「恢复」。</li>
     <li><b>投递失败</b>：单通道失败自动重试 1 次；仍失败则整条记为失败/部分失败并留错误，可在投递记录里手动重发。待投递行超过保留期会判「已过期」，不再自动重试。</li>
   </ul>
