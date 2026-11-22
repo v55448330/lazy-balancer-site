@@ -831,7 +831,7 @@ body.menu-open { overflow: hidden; }
   <p><b>每日摘要</b>是独立区块，不走事件订阅：按用户配置的投递时间（默认 09:00，按面板时区）推送昨日运营摘要，可勾选包含模块、为每种通道设置渲染格式，并支持「测试发送」——测试与定时日报走同一管线，结果同样进投递记录。</p>
 
   <h3>7.4 事件目录</h3>
-  <p>目录共 <b>69 类事件</b>，是订阅矩阵与默认订阅的唯一事实源。面板订阅界面按六个分组展示（认证 / 配置 / 安全 / 证书 / 集群 / 系统），其中 <code>task.*</code> 与 <code>notify.*</code> 归入「系统」组；为便于查找，下面按语义把任务与通知自监控单独列出。<b>「默认订阅」列只影响没有显式规则的用户</b>，显式规则以用户选择为准。</p>
+  <p>目录共 <b>68 类事件</b>，是订阅矩阵与默认订阅的唯一事实源。面板订阅界面按六个分组展示（认证 / 配置 / 安全 / 证书 / 集群 / 系统），其中 <code>task.*</code> 与 <code>notify.*</code> 归入「系统」组；为便于查找，下面按语义把任务与通知自监控单独列出。<b>「默认订阅」列只影响没有显式规则的用户</b>，显式规则以用户选择为准。</p>
 
   <p><b>认证（14）</b></p>
   <table>
@@ -854,7 +854,7 @@ body.menu-open { overflow: hidden; }
     </tbody>
   </table>
 
-  <p><b>配置（20）</b></p>
+  <p><b>配置（18）</b></p>
   <table>
     <thead><tr><th>事件</th><th>事件 ID</th><th>级别</th><th>默认订阅</th></tr></thead>
     <tbody>
@@ -872,12 +872,10 @@ body.menu-open { overflow: hidden; }
       <tr><td>还原完成</td><td><code>cfg.restore_done</code></td><td>信息</td><td>关</td></tr>
       <tr><td>还原失败</td><td><code>cfg.restore_failed</code></td><td>严重</td><td>开</td></tr>
       <tr><td>Caddy 服务启停</td><td><code>cfg.caddy_lifecycle</code></td><td>警告</td><td>开</td></tr>
-      <tr><td>Admin TLS 配置变更</td><td><code>cfg.admin_tls_changed</code></td><td>信息</td><td>关</td></tr>
       <tr><td>OIDC 配置变更</td><td><code>cfg.oidc_changed</code></td><td>信息</td><td>关</td></tr>
       <tr><td>自动备份设置变更</td><td><code>cfg.auto_backup_changed</code></td><td>信息</td><td>关</td></tr>
       <tr><td>通知设置变更</td><td><code>cfg.notification_changed</code></td><td>信息</td><td>关</td></tr>
       <tr><td>集群设置变更</td><td><code>cfg.cluster_settings_changed</code></td><td>信息</td><td>关</td></tr>
-      <tr><td>CA 提供商变更</td><td><code>cfg.ca_provider_changed</code></td><td>信息</td><td>关</td></tr>
     </tbody>
   </table>
 
@@ -902,13 +900,14 @@ body.menu-open { overflow: hidden; }
     </tbody>
   </table>
 
-  <p><b>证书（3）</b></p>
+  <p><b>证书（4）</b></p>
   <table>
     <thead><tr><th>事件</th><th>事件 ID</th><th>级别</th><th>默认订阅</th></tr></thead>
     <tbody>
       <tr><td>证书签发成功</td><td><code>cert.issued</code></td><td>信息</td><td>开</td></tr>
       <tr><td>证书签发失败</td><td><code>cert.failed</code></td><td>严重</td><td>开</td></tr>
       <tr><td>证书临期预警</td><td><code>cert.expiry_warning</code></td><td>警告</td><td>开</td></tr>
+      <tr><td>免费证书配置变更</td><td><code>cert.config_changed</code></td><td>信息</td><td>关</td></tr>
     </tbody>
   </table>
 
